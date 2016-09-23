@@ -1,0 +1,91 @@
+{% extends 'student/studentBasepage.html' %}
+{% load mathfilters %}
+{% block breadcrumb %}
+	<a href="#">Question History</a>
+{% endblock %}
+
+{% block content %}
+
+		<div class="row-fluid sortable">
+				
+				<div class="box span12">		
+
+					<div class="box-header" data-original-title>
+						<h2><i class="icon-align-justify"></i><span class="break"></span>List</h2>
+						<div class="box-icon">
+							
+						</div>
+					</div>
+					
+					<div class="box-content">
+						
+						<div id="legends" align = "right" >
+									<button class="btn btn-small btn-success" onhover="">>90%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-warning">70%-90%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-danger">&lt;70%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-inverse">No Attempts</button>&nbsp;&nbsp;
+						</div>
+						<br>
+
+						<table class="table table-striped bootstrap-datatable datatable">
+						  <thead>
+							  <tr>
+								  <th width="40%">Question</th>
+								  <th width="25%">Topic</th>
+								  <th>Date of Quiz</th>
+								  <th>Attempts</th>
+								  <th>Review/Retry</th>
+							  </tr>
+						  </thead>
+						  <tbody id = "tbody">
+							{% for studentAnswer in studentAnswers %}
+                                <tr>
+
+                                	<td>{{ studentAnswer.question.question }}</td>
+									
+									<td>{{ studentAnswer.question.courseTopic }}</td>
+
+                                    <td>{{ studentAnswer.question.datetime|date:"Y-m-d" }}</td>
+                                    {% if studentAnswer.numAttempts == 0 %}
+                                    	<td> <span class="label"> {{ studentAnswer.numCorrectAttempts }} / {{ studentAnswer.numAttempts }} </span> </td>
+                                    {% elif studentAnswer.numCorrectAttempts|div:studentAnswer.numAttempts > 0.9 %}
+                                    	<td> <span class="label label-success"> {{ studentAnswer.numCorrectAttempts }} / {{ studentAnswer.numAttempts }} </span> </td>
+                                    {% elif studentAnswer.numCorrectAttempts|div:studentAnswer.numAttempts > 0.7 %}
+                                    	<td> <span class="label label-warning"> {{ studentAnswer.numCorrectAttempts }} / {{ studentAnswer.numAttempts }} </span> </td>
+                                    {% else %}
+                                    	<td> <span class="label label-important"> {{ studentAnswer.numCorrectAttempts }} / {{ studentAnswer.numAttempts }} </span> </td>
+                                    {% endif %}
+
+                                    <td class="center">
+                                    	<a class="btn btn-success" 
+                                    	href="{% url 'student:studentQuestionView' studentAnswer.student.id studentAnswer.question.id 99999 1 %}">
+												<i class="halflings-icon white zoom-in"></i>
+										</a>
+											{% if studentAnswer.numCorrectAttempts > 0 %}
+												<b>&nbsp;/&nbsp;</b>
+	                                    		<a class="btn btn-warning" 
+	                                    	href="{% url 'student:studentQuestionRetry' studentAnswer.student.id studentAnswer.question.id 99999 1 %}">
+													<i class="halflings-icon white zoom-in"></i>
+												</a>
+											{% else %}
+												<b>&nbsp;/&nbsp;</b>
+	                                    		<a class="btn" 
+	                                    	href="#" title='Caption for the photo on Colorbox'>
+													<i class="halflings-icon white zoom-in"></i>
+												</a>
+											{% endif %}
+
+                                    	
+									</td>
+                                </tr>
+                           {% endfor %} 
+
+						  </tbody>
+					  </table>
+					</div> <!-- End: box-content -->
+
+				</div><!-- End: span-12 -->
+
+		</div><!-- End: row-fluid-sortable -->
+
+{% endblock %}

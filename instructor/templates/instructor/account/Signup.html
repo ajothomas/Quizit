@@ -1,0 +1,218 @@
+{% extends 'instructor/account/Base.html' %}
+
+{% block content %}
+	<!-- login pane-->
+	<div class="modal show" tabindex="-1" role="dialog" aria-hidden="true" style="width:500px" >
+		  <div class="modal-dialog">
+		  <div class="modal-content">
+		      <div class="modal-header">
+		          <h1 class="text-center">Sign Up</h1>
+		      </div>
+
+		      <div class="modal-body" align="left" style="margin-left: 50px;">
+		          <form method="POST" role="form" class="form col-md-8 center-block" id="registrationForm" action="{% url 'instructor:registrationFormProcessing' %}"> {% csrf_token %}
+		          	<span id = "signUpErrors" style="color:red">
+
+		          	</span>
+
+		          	<br>
+		          	<div class="form-group">
+		              <input type="text" class="form-control input-lg" style="width:165px" placeholder="First Name" id="firstName" name="firstName" required>
+		              <input type="text" class="form-control input-lg" style="width:165px" placeholder="Last Name" id="lastName" name="lastName" required>
+		            </div>
+					<div class="form-group">
+
+					</div>
+		            
+		            <div class="form-group">
+		              <input type="text" class="form-control input-lg" style="width:350px" placeholder="Email" id="email" name = "email" required="">
+		              <input type="hidden" name="emailHiddenCheck" id="emailHiddenCheck">
+		            </div>
+
+		            <div class="form-group">
+		              <input type="password" class="form-control input-lg" style="width:165px" placeholder="Password" id="password1" name="password1" required>
+		              <input type="password" class="form-control input-lg" style="width:165px" placeholder="Re-enter Password" id="password2" name="password2" required>
+		            </div>
+					
+					<div class="form-group">
+		              <button type="submit" class="btn btn-primary btn-lg btn-block" style="width:365px; align:left;">Create Account</button>
+		            </div>
+
+		          </form>
+		      </div>
+
+		      <div class="modal-footer">
+		          <div style="text-align:left;">Have an account? <a href="{% url 'instructor:login_view' %}" style="text-decoration:underline">Sign in</a></div>
+		      </div>
+		  </div>
+		  </div>
+	</div>
+
+{% endblock %}
+
+
+{% block end_js %}
+
+<script type='text/javascript'>
+$(document).ready(function(){
+
+		// generates course dropdown on clicking "Choose a course"
+		$("#courses").click( function(){
+			$.get( "{% url 'account:generateCourseDropdown' %}" ,
+				{ "username" :"uname" },
+				function(data) {
+					var obj = JSON.parse(data);
+
+					// remove all option
+					$('#courses').html('');
+
+					var selectElement = document.getElementById("courses");
+					
+					var optionTopElement = document.createElement("option");
+						optionTopElement.setAttribute("value","");
+						optionTopElement.disabled = true;
+						optionTopElement.selected = true;
+						optionTopElement.innerHTML = "Choose a course";
+						selectElement.appendChild(optionTopElement);
+
+					for(var key in obj){
+						console.log("Key : "+key+" ,value: "+ obj[key]);
+						var optionElement = document.createElement("option");
+						optionElement.setAttribute("id",key);
+						optionElement.setAttribute("name",key);
+						optionElement.setAttribute("value",obj[key]);
+						optionElement.innerHTML = obj[key];
+						selectElement.appendChild(optionElement);
+					}
+				} // success function
+			); // get
+		}); // click action
+
+		/**************************************************************************************************/
+		/**************************************************************************************************/
+
+		var emailSyntaxFlag = 0;
+		var emailValidFlag = 0;
+		var passwordMatchFlag = 0;
+		var usernameValidFlag = 0;
+
+		// checking the validity of an email
+		function verifyEmail() {
+			console.log("Checking the email format");
+
+		    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		    //console.log("Email test for " + $("#email").val() + " : "+re.test($("#email").val()));
+		    
+		    if($("#email").val().length>0){
+			    if(re.test($("#email").val())){
+					emailSyntaxFlag = 1;
+					$("#signUpErrors").html("");
+			    }
+			    else {
+			    	emailSyntaxFlag = 0;
+					$("#signUpErrors").html("Email is not valid");
+			    }
+			 } 
+			 else {
+					emailSyntaxFlag = 1;
+					$("#signUpErrors").html("");
+			 }
+
+			 // checking the presence of duplicate email
+			 if($("#email").val().length>0 && re.test($("#email").val())){
+			 	
+			 	$.get("{% url 'instructor:verifyEmail' %}"
+					, { "email" : $("#email").val(), }
+					, function(data) {
+						if(parseInt(data) === 1){
+							$("#signUpErrors").html("Email is already registered");
+							// setting a hidden input field as flag as it is not possible to set a global variable through a callback
+							$("#emailHiddenCheck").val("0");
+
+							}
+						else{
+							$("#signUpErrors").html("");
+							$("#emailHiddenCheck").val("1");
+						}
+					}
+				);
+
+			 }
+		}
+
+		
+		// function to check if the entered passwords match
+		function verifyRePassword(){
+			console.log("Checking reentered password");
+			console.log("Re-Checking username : "+ $("#usernameHiddenCheck").val());
+			if( $("#password1").val() === $("#password2").val() ){
+				console.log("Passwords match");
+				$("#signUpErrors").html("");
+				passwordMatchFlag = 1;
+			}
+			else{
+				console.log("Passwords don't match");
+				$("#signUpErrors").html("Passwords do not match");
+				passwordMatchFlag = 0;
+			} 
+		}
+
+		// event listener for username field
+		$("#username").blur(function() {
+			verifyUsername()
+			
+			// console.log("usernameFlag : "+usernameFlag);
+			// if(verifyUsername()==0)
+			// 	$("#signUpErrors").html("hello");
+			// else
+			// 	$("#signUpErrors").html("boss");
+			});
+
+		// event listener for email field
+		$("#email").blur(function() {	
+				verifyEmail();
+			});
+
+		// event listener for password fields
+		$("#password2").blur(function() {	
+				verifyRePassword();
+			});
+
+		// event listener for password fields
+		$("#optionTop").blur(function() {	
+				verifyRePassword();
+			});
+
+		$('#registrationForm').submit( function(event){
+				var customMessage = "Error(s): ";
+				emailValidFlag = parseInt($("#emailHiddenCheck").val());
+
+				if(emailSyntaxFlag === 0)
+					customMessage = customMessage.concat("Email is incorrect. ");
+				if(emailValidFlag === 0)
+					customMessage = customMessage.concat("Email is already registed. ");
+				if(passwordMatchFlag === 0)
+					customMessage = customMessage.concat("Passwords do not match. ");
+
+				// if all validity checks are not cleared, appropriate message is shown and default POST request is not sent.
+				if(emailSyntaxFlag===0 || emailValidFlag===0 || passwordMatchFlag===0){
+					$("#signUpErrors").html(customMessage);
+					 event.preventDefault();
+				}
+			});
+
+		
+
+		$
+
+	}); //document.ready
+
+	$(window).bind("pageshow", function() {
+  		document.getElementById("registrationForm").reset();
+
+  		
+
+  	});// window pageshow
+
+</script>
+{% endblock %}

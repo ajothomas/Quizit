@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+
+
+<head>
+
+	<!-- start: Meta -->
+	<meta charset="utf-8">
+	<title>QUIZIT</title>
+	<meta name="description" content="Bootstrap Metro Dashboard">
+	<meta name="author" content="Dennis Ji">
+	<meta name="keyword" content="Metro, Metro UI, Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+	<!-- end: Meta -->
+
+	<!-- start: Mobile Specific -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- end: Mobile Specific -->
+
+	<!-- start: CSS -->
+	<link id="bootstrap-style" href="{% static "account/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "account/css/bootstrap-responsive.min.css" %}" rel="stylesheet">
+	<link id="base-style" href="{% static "account/css/style.css" %}" rel="stylesheet">
+	<link id="base-style-responsive" href="{% static "account/css/style-responsive.css" %}" rel="stylesheet">
+	<!-- end: CSS -->
+
+	{% block css_top %}
+	{% endblock %}
+
+	<!-- start: JavaScript-->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+	
+	<script src="{% static "account/js/d3.js" %}"></script>
+	<script src="{% static "account/js/d3.min.js" %}"></script>
+	<script src="{% static "account/js/jquery-1.9.1.min.js" %}"></script>
+	<script src="{% static "account/js/jquery-migrate-1.0.0.min.js" %}"></script>
+	<script src="{% static "account/js/jquery-ui-1.10.0.custom.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.ui.touch-punch.js" %}"></script>
+	<script src="{% static "account/js/modernizr.js" %}"></script>
+	<script src="{% static "account/js/bootstrap.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.cookie.js" %}"></script>
+	<script src="{% static "account/js/fullcalendar.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.dataTables.min.js" %}"></script>
+	<script src="{% static "account/js/excanvas.js" %}"></script>
+	<script src="{% static "account/js/jquery.flot.js" %}"></script>
+	<script src="{% static "account/js/jquery.flot.pie.js" %}"></script>
+	<script src="{% static "account/js/jquery.flot.stack.js" %}"></script>
+	<script src="{% static "account/js/jquery.flot.resize.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.chosen.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.uniform.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.cleditor.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.noty.js" %}"></script>
+	<script src="{% static "account/js/jquery.elfinder.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.raty.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.iphone.toggle.js" %}"></script>
+	<script src="{% static "account/js/jquery.uploadify-3.1.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.gritter.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.imagesloaded.js" %}"></script>
+	<script src="{% static "account/js/jquery.masonry.min.js" %}"></script>
+	<script src="{% static "account/js/jquery.knob.modified.js" %}"></script>
+	<script src="{% static "account/js/jquery.sparkline.min.js" %}"></script>
+	<script src="{% static "account/js/counter.js" %}"></script>
+	<script src="{% static "account/js/retina.js" %}"></script>
+	<script src="{% static "account/js/custom.js" %}"></script>
+	<!-- end: JavaScript-->
+
+	{% block javascript %}
+	{% endblock %}
+
+</head>
+
+<body>
+	<!-- start: Header -->
+	<div class="navbar">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="{% url 'account:login_view' %}"><span>QUIZIT</span></a>
+
+				<!-- start: Header Menu -->
+				<div class="nav-no-collapse header-nav">
+					<ul class="nav pull-right">
+
+						<li>
+							<a class="btn" href="{% url 'account:helpPage' %}">
+								Help
+							</a>
+						</li>
+						<!-- end: User Dropdown -->
+					</ul>
+				</div>
+				<!-- end: Header Menu -->
+
+			</div>
+		</div>
+	</div>
+	<!-- end: Header -->
+
+		<div class="container-fluid-full">
+		<div class="row-fluid">
+
+			<!-- start: Main Menu -->
+			<div id="sidebar-left" class="span2">
+				<div class="nav-collapse sidebar-nav">
+					<ul class="nav nav-tabs nav-stacked main-menu">
+						<li>
+							<a class="submenu" href="{% url 'student:helpPage' %}">
+								<i class="icon-file-alt"></i>
+								<span class="hidden-tablet">Help</span>
+							</a>
+						
+							</ul>	
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- end: Main Menu -->
+
+			<!-- start: Content -->
+			<div id="content" class="span10">
+				<div class="page-header">
+				<h1>QUIZIT</h1>
+				</div> 
+				 <div class="row-fluid">            
+					  <div class="span10">
+						<p>
+						QUIZIT is a educational website created which primarily works as a question answer site. Students can enroll into available courses and can take quizzes set by the instructor for the enrolled courses.
+						</p>
+
+						<p>
+						QUIZIT is one of the CS educational technologies created by <a href="https://sites.google.com/a/asu.edu/csi/">CSI Lab</a> of <a href="http://cidse.engineering.asu.edu/">School of Computing, Informatics & Decision Systems Engineering</a> at <a href="http://www.asu.edu/">Arizona State University</a>. Some features of the website are listed below:
+						</p>
+
+					  </div>
+				  </div><!--/row -->
+
+				<div class="page-header">
+				<h1>User Authentication</h1>
+				</div> 
+				<div class="row-fluid"> 
+					<div class="span10">
+						<p>
+						QUIZIT allows a student to register in the website for a course. The system authenticates a student using their email id and password. Students can also use the <small>Forgot Password</small> feature to reset the password
+						</p>
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_Registration.png' %}" />
+						&nbsp;
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_Login.png' %}" />
+					</div>
+				</div>
+
+				<br>
+				<div class="page-header">
+				<h1>Today's Quiz</h1>
+				</div> 
+				<div class="row-fluid"> 
+					<div class="span10">
+						<p>
+						QUIZIT's student portal allows a student to view the quiz of the day when logged in. The student can select an option and submit that as an answer. 
+						</p>
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_TodaysQuiz.png' %}" />
+						&nbsp;
+					</div>
+				</div>
+
+				<br>
+				<div class="page-header">
+				<h1>Calendar View</h1>
+				</div> 
+				<div class="row-fluid"> 
+					<div class="span10">
+						<p>
+						QUIZIT's student portal displays a calendar view of the quizzes available in the today's quiz page. The coloring scheme for the calendar is described in the legends adjacent to the calendar. Clicking on a date will display the question and let the user retake or review a quiz.
+						</p>
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_Calendar.png' %}" />
+						&nbsp;
+					</div>
+				</div>
+
+				<br>
+				<div class="page-header">
+				<h1>Question History</h1>
+				</div> 
+				<div class="row-fluid"> 
+					<div class="span10">
+						<p>
+						QUIZIT's student portal displays a calendar view of the quizzes available in the today's quiz page. The coloring scheme for the calendar is described in the legends adjacent to the calendar. Clicking on a date will display the question and let the user retake or review a quiz.
+						</p>
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_QuestionList.png' %}" />
+						&nbsp;
+					</div>
+				</div>
+
+				<br>
+				<div class="page-header">
+				<h1>Review/Retry</h1>
+				</div> 
+				<div class="row-fluid"> 
+					<div class="span10">
+						<p>
+						QUIZIT's student portal lets a student review a question where they can view previously attempted choices. A student can also retry a quiz which will let them practise the question over and over again. Using the retry option is counted as an attempt. The Review/Retry pages also has a section where students can drop comments on the question and view comments by other students.
+						</p>
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_Review.png' %}" />
+						&nbsp;
+						<img style="height:300px" src="{% static 'account/HelpPage/Student_Retry.png' %}" />
+						
+						
+					</div>
+				</div>
+			</div><!-- End: Content-->
+
+		</div><!--End: row-fluid-->
+		</div><!--End: container-fluid-full-->
+
+
+	<footer>
+	<p>
+		<span style="text-align:left;float:left">
+		QUIZIT <small> is one of the CS educational technologies created by <a href="https://sites.google.com/a/asu.edu/csi/">CSI Lab</a> of <a href="http://cidse.engineering.asu.edu/">School of Computing, Informatics & Decision Systems Engineering</a> at <a href="http://www.asu.edu/">Arizona State University</a>
+		</small>
+		</span>		
+	</p>
+	</footer>
+
+	
+
+</body>
+
+</html>

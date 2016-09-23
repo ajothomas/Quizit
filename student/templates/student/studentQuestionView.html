@@ -1,0 +1,415 @@
+{% extends 'student/studentBasepage.html' %}
+{% load tz %}
+{% load string_operations %}
+
+{% block breadcrumb %}
+	<a href="#">Check Question</a>
+{% endblock %}
+
+{% block content %}
+	<!-- If there is a quiz today -->
+	{% if quizFlag == 1 %}
+
+		{% if topAlertFlag != "99999" %}
+
+			<div class="row-fluid">
+				<div class="box span12">
+
+					<div class="box-header">
+						<h2><i class="halflings-icon white white bullhorn"></i><span class="break"></span>Alert</h2>
+						<div class="box-icon">
+							<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
+						</div>
+					</div>
+					<div class="box-content alerts">
+					{% if topAlertFlag == 0 %}
+						<div class="alert alert-error ">
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>Error!</strong> Your answer is incorrect!
+						</div>
+					{% elif topAlertFlag == 1 %}
+						<div class="alert alert-success ">
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>Oh snap!</strong> Your answer is correct!
+						</div>
+					{% elif topAlertFlag == 3 %}
+						<div class="alert alert-error ">
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>Oh snap!</strong> You have already answered the question.
+						</div>
+					{% endif %}
+					</div>
+				</div><!--/span-->
+			</div><!--/row-->
+
+		{% endif %}
+	
+		<div class="row-fluid sortable">
+			<div class="box span8">
+				<div class="box-header">
+					<h2>Quiz- {{ question.datetime }}</h2>
+				</div>
+				<div class="box-content">
+					<div class="page-header">
+						<h2>Q)&nbsp;&nbsp;<small>{{ question.question }}?</small></h2>
+					</div>
+					<div class="row-fluid">
+						<form class="form-horizontal" id="answerForm" role="form" method="POST">{% csrf_token %}
+							<fieldset>
+							
+							<div class="control-group">
+							
+								{% if question.choiceA != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosA" value="A" required>
+									<span id="optionASpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionAAlert"></i>
+									
+									{{ shuffledQuestion.choiceA }}
+
+									<br>
+							  	</label>
+
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+								
+							  	{% if question.choiceB != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosB" value="B">
+									<span id="optionBSpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionBAlert"></i>
+									
+									{{ shuffledQuestion.choiceB }}
+
+									<br>
+							  	</label>
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+
+							  	{% if question.choiceC != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosC" value="C">
+									<span id="optionCSpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionCAlert"></i>
+									
+									{{ shuffledQuestion.choiceC }}
+
+									<br>
+							  	</label>
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+
+							  	{% if question.choiceD != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosD" value="D">
+									<span id="optionDSpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionDAlert"></i>
+									
+									{{ shuffledQuestion.choiceD }}
+
+									<br>
+							  	</label>
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+
+							  	{% if question.choiceE != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosE" value="E">
+									<span id="optionESpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionEAlert"></i>
+									
+									{{ shuffledQuestion.choiceE }}
+
+									<br>
+							  	</label>
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+
+							  	{% if question.choiceF != "" %}
+							 	<label class="radio">
+									<input type="radio" name="optionsRadios" id="optionsRadiosF" value="F">
+									<span id="optionFSpan">
+									&nbsp;&nbsp;&nbsp;
+									</span>
+									<i id="optionFAlert"></i>
+									
+									{{ shuffledQuestion.choiceF }}
+
+									<br>
+							  	</label>
+							  	<div style="clear:both"></div>
+							  	{% endif %}
+
+						  	</div>
+
+						  	<div id="quizNotification">
+						  	&nbsp;
+							</div>
+							<div class="form-actions" text-align="center">
+								  <button type="submit" style = "width:120px" class="btn btn-primary" id="submitButton">Submit</button>
+								  &nbsp;
+								  {% if backLocation == 1 %}
+								  	<button type="button" style = "width:120px" class="btn btn-danger" onclick="questionListCalender();">Go Back</button>
+								  {% else %}
+								  	<button type="button" style = "width:120px" class="btn btn-danger" onclick="questionListCalender();">Go Back</button>
+								  {% endif %}
+							</div>
+							</fieldset>
+						</form>
+					</div>
+				</div><!--/row -->
+			</div>
+		</div>
+		
+		<div class="row-fluid">
+		
+			<div class="box span6" onTablet="span6" onDesktop="span6">
+				<div class="box-header" >
+					<h2><i class="halflings-icon white edit"></i><span class="break"></span>Your Comments</h2>
+					
+				</div>
+				<div class="box-content">
+					<div style="height:250px; overflow-y:scroll;">
+					<ul class="chat" >
+						{% if studentExplanationFlag == True %}
+							{% for studentExplanation in studentExplanations %}
+								<li class="center">
+										<span class="message">
+											<span class="from"> <b> {{ first_name|title }}{{ last_name|title }} ~ </b></span>
+											<span class="time"> <b> {% timezone "America/Phoenix" %} {{ studentExplanation.postTimeStamp }} {% endtimezone %} </b> </span>
+											<span class="text">
+												{{ studentExplanation.explanationText }}
+											</span>
+									</span>	                                  
+								</li>
+							{% endfor %}
+						{% else %}
+							<b>You have not posted any explanations for this question</b>
+						{% endif %}
+						</div>
+						<div class="chat-form">
+							<textarea id="explanationText" name="explanationText"></textarea>
+							<button class="btn btn-info" onclick = "postExplanation();">Submit</button>
+						</div>	
+				</div>
+			</div><!--/span-->
+		
+
+			<div class="box span6" onTablet="span6" onDesktop="span6">
+				<div class="box-header" >
+					<h2><i class="halflings-icon white comment"></i><span class="break"></span>Other Comments</h2>
+					<div class="box-icon">
+						
+					</div>
+				</div>
+				<div class="box-content" style="height:405px; overflow-y:scroll;">
+					<ul class="chat">
+					{% if studentExplanationFlag == True %}
+						{% if otherStudentExplanationFlag == True %}
+							{% for otherStudentExplanation in otherStudentExplanations %}
+								<li class="center">
+										<li class="center">
+									<span class="message">
+											<span class="from"> <b> {{ otherStudentExplanation.student.first_name|anonymize:"1" }} 
+											 {{ otherStudentExplanation.student.last_name|anonymize:"2" }} 
+											~</b></span>
+											<span class="time"> <b> {% timezone "America/Phoenix" %} {{ otherStudentExplanation.postTimeStamp }} {% endtimezone %} </b> </span>
+											<span class="text">
+												{{ otherStudentExplanation.explanationText }}
+											</span>
+									</span>                             
+							</li>                     
+								</li>
+							{% endfor %}
+						{% else %}
+							<b>Other users have not posted any explanations for this question</b>
+						{% endif %}	
+					{% else %}
+						<b>You have to post at least one explanation to view this section</b>
+					{% endif %}
+
+					</ul>
+				</div>
+			</div><!--/span-->
+
+		</div><!--/row-->
+
+	{% endif %}
+
+{% endblock %}
+
+{% block javascript_bottom %}
+<script type="text/javascript">
+
+	
+	// redirect to question list page on click the button
+	function questionListCalender(){
+		if(parseInt({{ backLocation }}) == 1){
+			window.location.href = "{% url 'student:studentQuestionList' %}";
+		}
+		else{
+			window.location.href = "{% url 'student:studentTodaysQuiz' %}";
+		}
+	}
+
+	function postExplanation(){
+
+		$.ajax({
+			type: "POST",
+			url: "{% url 'student:saveExplanation' %}",
+			data: {
+				"username" : "{{ username }}",
+				"questionid" : "{{ question.id }}",
+				"explanationText" : $("#explanationText").val(),
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success:function()
+			{
+				window.location.reload(true);
+			}	
+				//alert("success");
+		});
+	}
+	
+	function updateVotes(recommendationId,studentId,questionId,voteFlag,spanId)
+		{
+			console.log(spanId);
+			$.ajax({
+				type: "POST",
+				url: "{% url 'student:updateRecommendations' %}",
+				data: {
+					recommendationId : recommendationId,
+					questionId : questionId,
+					voteFlag : voteFlag,
+					studentId : studentId,
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success:function()
+				{
+					console.log("success");
+					spanId = '#'+spanId;
+					if(voteFlag == 0)
+						$(spanId).html("You have <strong>downvoted</strong> this reading");
+					else
+						$(spanId).html("You have <strong>upvoted</strong> this reading");
+					window.location.reload(true);
+				}	
+					//alert("success");
+			});
+		}
+
+	$(document).ready(function(){
+
+		// when the page is loaded the first time
+		var studentAns = "{{ studentAnswer }}";
+		if( studentAns!= null && parseInt("{{ studentAnswer.numAttempts }}")>0 ) {
+			//var answerSequence = "{{ studentAnswer.answerSequence }}";
+			var answerSequence = "{{ shuffledAnswerSequence }}";
+			var answer = "{{ shuffledQuestion.answer }}";
+			var selectedArr = answerSequence.split("|");
+			var index = selectedArr.indexOf("");
+			if (index > -1) {
+			    selectedArr.splice(index, 1);
+			}
+			console.log(selectedArr);
+			console.log(selectedArr.length);
+			for(var x=0; x<selectedArr.length;x++){
+        		if( selectedArr[x] == answer.trim() ){
+
+        			$("#option"+selectedArr[x]+"Span").empty(); //removing spaces. 3 spaces = one icon
+        			$("#option"+selectedArr[x]+"Alert").attr("class","icon-ok"); // create ok sign
+        			$("#option"+selectedArr[x]+"Alert").attr("style","color:green"); // make the sign green in color
+        			$('[id^="optionsRadios"]').attr("disabled",true); // disable all radio buttons
+        			$("#submitButton").attr("disabled","disabled"); // disable submit button
+
+        			$('#quizNotification').attr("class","alert alert-warning");
+	                $('#quizNotification').html("You have answered the question correctly in "+ selectedArr.length +" attempts");
+	                //$('#quizNotification').html("You have answered the question correctly");
+        		} 
+        		else if(selectedArr[x]!=''){
+
+        			$("#option"+selectedArr[x]+"Span").empty();
+        			$("#option"+selectedArr[x]+"Alert").attr("class","icon-remove");
+        			$("#option"+selectedArr[x]+"Alert").attr("style","color:red");
+        			$("#optionsRadios"+selectedArr[x]).attr("disabled",true);
+        			$('#quizNotification').attr("class","alert alert-warning");
+        			$('#quizNotification').html("You have made " + selectedArr.length +" unsuccessful attempts to answer the question");
+	                //$('#quizNotification').html("You have not yet answered the question correctly in this section");
+        		}
+        	}
+		}
+
+		// form submit
+		$("#answerForm").submit(function(event){
+			
+			var selectedOption = $('input[name=optionsRadios]:checked').val();
+			event.preventDefault();
+			var choiceList = {{ choiceList|safe }};
+
+			var postData = {
+				"username" : "{{ username }}",
+				"questionid" : "{{ question.id }}",
+				"selectedOption" : selectedOption,
+				"choiceList" : choiceList,
+				"activityID" : "{{ activityID }}",
+				"csrfmiddlewaretoken" : $('input[name=csrfmiddlewaretoken]').val(),  
+			};
+			
+			$.ajax({
+					type : "POST",
+	                url : "{% url 'student:todaysQuizProcessing' %}",
+	                data : postData,
+	                success : function(data){
+	                	var returnedData = JSON.parse(data);
+
+	                	var selectedArr = returnedData.shuffledAnswerSequence.split("|");
+	                	var index = selectedArr.indexOf("");
+							if (index > -1) {
+							    selectedArr.splice(index, 1);
+							}
+						console.log(selectedArr);
+						console.log(selectedArr.length);
+	                	for(var x=0; x<selectedArr.length;x++){
+	                		if( selectedArr[x] == returnedData.shuffledAnswer ){
+	                			$("#option"+selectedArr[x]+"Span").empty();
+	                			$("#option"+selectedArr[x]+"Alert").attr("class","icon-ok");
+	                			$("#option"+selectedArr[x]+"Alert").attr("style","color:green");
+	                			$('[id^="optionsRadios"]').attr("disabled",true);
+
+	                			$('#quizNotification').attr("class","alert alert-warning");
+	                			$('#quizNotification').html("CORRECT ANSWER!! You have answered the question correctly in "+ returnedData.numAttempts +" attempts");
+	                			//$('#quizNotification').html("CORRECT ANSWER!!");
+	                		} 
+	                		else if(selectedArr[x]!=''){
+	                			$("#option"+selectedArr[x]+"Span").empty();
+	                			$("#option"+selectedArr[x]+"Alert").attr("class","icon-remove");
+	                			$("#option"+selectedArr[x]+"Alert").attr("style","color:red");
+	                			$("#optionsRadios"+selectedArr[x]).attr("disabled",true);
+
+	                			$('#quizNotification').attr("class","alert alert-warning");
+	                			$('#quizNotification').html("INCORRECT ANSWER!! You have made " + selectedArr.length +" unsuccessful attempts to answer the question");
+	                			//$('#quizNotification').html("INCORRECT ANSWER!! You have made "+ selectedArr.length + " unsuccessful attempt(s) to answer the question");
+	                			//$('#quizNotification').html("INCORRECT ANSWER!!");
+	                		}
+	                		console.log("Answer: "+selectedArr[x]);
+	                	}
+	                	selectedArrSorted = selectedArr.sort();
+	                	console.log(selectedArrSorted);
+	                }
+			
+			}); // end of ajax call
+		}); // end of submit button function
+	}); // end of document ready
+
+</script>
+{% endblock %}

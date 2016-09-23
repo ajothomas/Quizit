@@ -1,0 +1,437 @@
+{% extends 'instructor/instructorBasepage.html' %}
+{% load tz %}
+{% load string_operations %}
+
+{% block breadcrumb %}
+	<a href="#">View Question</a>
+{% endblock %}
+
+{% block content %}
+
+	<div class="row-fluid sortable">
+		<div class="box span12">
+			<div class="box-header" data-original-title>
+				<h2><i class="halflings-icon white edit"></i><span class="break"></span>View MCQ</h2>
+				<div class="box-icon">
+					<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
+				</div>
+			</div>
+
+			<div class="box-content">
+				<form class="form-horizontal" id="questionform" role="form" method="POST">{% csrf_token %}
+				  <fieldset>
+					<div class="control-group">
+					  <label class="control-label" for="typeahead">Question </label>
+					  <div class="controls">
+						<textarea id="question" rows="6" class="span6"></textarea>
+					  </div>
+					</div>
+
+
+					<div class="control-group">
+						<label class="control-label" for="selectError">Course Topic</label>
+						<div class="controls">
+						  <select id="courseTopic" class="span6" required>
+
+						  </select>
+						</div>
+					 </div>
+					<div id="newCourseTopicOuterDiv">					
+					</div>
+
+					<!-- Start of Choices group -->
+					<div class="control-group" id = "allChoices">
+					<!-- The choices will be added by the JS code -->
+
+					</div>
+					<!-- End of Choices group -->
+
+					
+					<div class="control-group">
+						<label class="control-label" for="selectError">Answer Choice</label>
+						<div class="controls">
+						  <input type="text" id="answer" required>
+						</div>
+					 </div>
+
+					 <div class="control-group">
+					  <label class="control-label" for="date01">Date</label>
+					  <div class="controls">
+						<input type="text" class="input-xlarge datepicker" id="datetimepicker_result">
+					  </div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="selectError">Level</label>
+						<div class="controls">
+						  <select id="level">
+							<option>Easy</option>
+							<option>Moderate</option>
+							<option>Difficult</option>
+						  </select>
+						</div>
+					 </div>					
+				  </fieldset>
+				</form>
+
+			</div>
+		</div><!--/span-->
+	</div>
+	<div class="row-fluid sortable">
+		<div class="box span6">
+			<div class="box-header">
+				<h2><i class="halflings-icon white align-justify"></i><span class="break"></span>Question Stats</h2>
+				<div class="box-icon">
+					<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
+				</div>
+			</div>
+			<div class="box-content" style="height:300px; overflow-y:scroll;">
+				<table class="table span6">
+					  <thead>
+						  <tr>
+							  <th width="80%"></th>
+							  <th></th>
+						  </tr>
+					  </thead>   
+					  <tbody>
+						<tr>
+							<td>Number of students</td>
+							<td class="center">{{ numStudents }}</td>							
+						</tr>
+						<tr>
+							<td>Number of correct attempts</td>
+							<td class="center">{{ numCorrectAttempts }}/{{ numAttempts }}</td>
+						</tr>
+						<tr>
+							<td>Number of notes</td>
+							<td class="center">{{ numNotes }}</td>
+						</tr>  
+					  </tbody>
+				 </table>  
+			</div>
+		</div><!--/row-->
+
+		<div class="box span6" onTablet="span6" onDesktop="span6">
+				<div class="box-header" >
+					<h2><i class="halflings-icon white edit"></i><span class="break"></span>Notes by students</h2>
+					<div class="box-icon">
+						<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
+					</div>
+				</div>
+				<div class="box-content">
+					<div style="height:300px; overflow-y:scroll;">
+					<ul class="chat" >
+						{% if notesFlag == True %}
+							{% for note in notes %}
+								<li class="center">
+										<span class="message">
+											<!--<span class="from"> <b> {{ note.student.first_name|anonymize:"1" }} {{ note.student.last_name|anonymize:"2" }} ~ </b></span>-->
+											<span class="from"> <b> {{ note.student.first_name|title }} {{ note.student.last_name|title }} ~ </b></span>
+											<span class="time"> <b> {% timezone "America/Phoenix" %} {{ note.postTimeStamp }} {% endtimezone %} </b> </span>
+											<span class="text">
+												{{ note.explanationText }}
+											</span>
+									</span>	                                  
+								</li>
+							{% endfor %}
+						{% else %}
+							<b>You have not posted any explanations for this question</b>
+						{% endif %}
+					</ul>
+					</div>					
+				</div>
+			</div><!--/span-->
+	</div>
+
+{% endblock %}
+
+{% block javascript_bottom %}
+
+
+	  <script type='text/javascript'>
+        $(document).ready(function () {
+
+        	/**************************************************************************************************/
+			/* Course topic dropdown generation*/
+			/**************************************************************************************************/
+
+			var getData = { 
+					"username" : "{{ username }}", 
+				};
+
+			$.ajax({
+				type : "GET",
+				context: document.body,
+				url : "{% url 'instructor:generateCourseTopicDropdown' %}" ,
+				data : getData ,
+				success: function(data) {
+					
+					// getting the sorted list
+					var courseTopics = JSON.parse(data);
+					$('#courseTopic').empty();
+					var selectElement = document.getElementById("courseTopic");
+					
+					for(var counter=0; counter<courseTopics.length; counter++){
+						var optionElement = document.createElement("option");
+						optionElement.setAttribute("id",courseTopics[counter][0]);
+						optionElement.setAttribute("name",courseTopics[counter][0]);
+						optionElement.setAttribute("value",courseTopics[counter][1]);
+						optionElement.innerHTML =courseTopics[counter][1];
+						selectElement.appendChild(optionElement);
+					}
+
+					var optionElement = document.createElement("option");
+					optionElement.setAttribute("id","otherTopic");
+					optionElement.setAttribute("name","otherTopic");
+					optionElement.setAttribute("value","--Enter a new topic--");
+					optionElement.innerHTML ="--Enter a new topic--";
+					selectElement.appendChild(optionElement);
+
+					// set the drop down value to the current one
+					$('#courseTopic').val('{{ question.courseTopic }}');
+				} // success function); // get
+			}); //ajax call
+			
+           
+            /**************************************************************************************************/
+			/* Add and delete course */
+			/**************************************************************************************************/
+
+            var counter = '{{ question.numChoices }}';
+
+			// generate the original set of choices for the question
+			for(var choiceCounter = 1; choiceCounter<=	counter; choiceCounter++){
+				var outerDiv = document.createElement('div');
+				outerDiv.setAttribute('class','control-group');
+				outerDiv.setAttribute('id','choiceGroup'+choiceCounter);
+
+				// label for the option
+				var label = document.createElement('label');
+				label.setAttribute('class','control-label');
+				label.innerHTML = "Choice "+String.fromCharCode(64 + choiceCounter);
+				outerDiv.appendChild(label);
+
+				// inner div which contains the textbox along with a remove button
+				var innerDiv = document.createElement('div');
+				innerDiv.setAttribute('class','controls');
+				outerDiv.appendChild(innerDiv);
+
+				// adding textbox 
+				var textBox = document.createElement('input');
+				textBox.setAttribute('id','choice'+choiceCounter);
+				textBox.setAttribute('class','span6');
+				textBox.type = "text";
+				textBox.required = true;
+				innerDiv.appendChild(textBox);
+
+				// adding two nonblack spaces
+				innerDiv.appendChild(document.createTextNode('\u00A0\u00A0\u00A0'));
+
+				// if(choiceCounter>2){
+				// 	// adding a remove button 
+				// 	var removeButton = document.createElement('input');
+				// 	removeButton.type = "button";
+				// 	removeButton.setAttribute('id',"removeChoice"+counter);
+				// 	removeButton.value = "-";
+				// 	innerDiv.appendChild(removeButton);
+				// }
+
+				document.getElementById('allChoices').appendChild(outerDiv);
+			}
+
+
+			// add choices for the MCQ form
+			$("#addChoice").click(function(){
+				console.log("counter : "+counter);
+				if(counter==6){
+            		alert("The maximum number of choices allowed are six");
+            		return false;
+				} 
+				else {
+					counter++;	 
+
+					//outer div	
+					var outerDiv = document.createElement('div');
+					outerDiv.setAttribute('class','control-group');
+					outerDiv.setAttribute('id','choiceGroup'+counter);
+
+					//label for the option
+					var label = document.createElement('label');
+					label.setAttribute('class','control-label');
+					label.setAttribute('id','choiceLabel'+counter);
+					label.innerHTML = "Choice "+String.fromCharCode(64 + counter);
+					outerDiv.appendChild(label);
+
+					//inner div which contains the textbox
+					var innerDiv = document.createElement('div');
+					innerDiv.setAttribute('class','controls');
+					outerDiv.appendChild(innerDiv);
+					
+					//textbox 
+					// var textBox = document.createElement('input');
+					// textBox.setAttribute('id','choice'+counter);
+					// $("choice"+counter).addClass( "span6" );
+					// textBox.type = "text";
+					// textBox.required = true;
+					// innerDiv.appendChild(textBox);
+					
+					//textarea
+					var textArea = document.createElement('textarea');
+					textArea.setAttribute('id','choice'+counter);
+					$("choice"+counter).addClass( "span6" );
+					$("choice"+counter).attr("rows" ,"2");
+					textArea.required = true;
+					innerDiv.appendChild(textArea);
+
+					innerDiv.appendChild(document.createTextNode('\u00A0\u00A0\u00A0'));
+
+					var removeButton = document.createElement('input');
+					removeButton.type = "button";
+					removeButton.setAttribute('id',"removeChoice"+counter);
+					removeButton.value = "-";
+					innerDiv.appendChild(removeButton);
+
+					document.getElementById('allChoices').appendChild(outerDiv);
+				}
+
+				// modify dropdown
+				generateDropDown();
+			}
+			);
+
+			// when remove choice button is clicked
+			$("[id^=removeChoice]").live("click", function(){
+				counter--;
+				var target_id = parseInt(event.target.id.substring(12)) ;
+				// Removing the choice group
+				$("#choiceGroup"+target_id).remove();
+				console.log("Target id : "+target_id);
+				if (target_id<counter+1){
+					
+					for(var i = target_id; i<=counter; i++){
+						// Changing the label
+						console.log("Inside loop :: i: "+i+", counter:"+counter);
+						$("#choiceLabel"+(i+1)).html("Choice "+String.fromCharCode(64 + i));
+						$("#choiceLabel"+(i+1)).attr("id","choiceLabel"+i);
+
+						// Changing the textbox
+						$("#choice"+(i+1)).attr("id","choice"+i);
+
+						// Changing the remove button
+						$("#removeChoice"+(i+1)).attr("id","removeChoice"+i);						
+
+						// Changing the remove button
+						$("#choiceGroup"+(i+1)).attr("id","choiceGroup"+i);						
+					}
+				}
+
+				// modify dropdown
+				generateDropDown();	
+			});
+
+            //setting the value of text from the database
+            {% autoescape off %}
+            $('#question').val('{{ question.question|escapejs }}');
+            $('#courseTopic').val('{{ question.courseTopic }}');
+            $('#choice1').val('{{ question.choiceA }}');
+            $('#choice2').val('{{ question.choiceB }}');
+            $('#choice3').val('{{ question.choiceC }}');
+            $('#choice4').val('{{ question.choiceD }}');
+            $('#choice5').val('{{ question.choiceE }}');
+            $('#choice6').val('{{ question.choiceF }}');
+            $('#answer').val('{{ question.answer }}');
+            $('#level').val('{{ question.level }}');
+            {% endautoescape %}
+            $('#datetimepicker_result').val('{{ question.datetime|date:"m/d/Y" }}');
+            //for reference : https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+
+            // disabling the input boxes
+            $('#question').prop('disabled', true);
+            $('#courseTopic').prop('disabled', true);
+            $('#choice1').prop('disabled', true);
+            $('#choice2').prop('disabled', true);
+            $('#choice3').prop('disabled', true);
+            $('#choice4').prop('disabled', true);
+            $('#choice5').prop('disabled', true);
+            $('#choice6').prop('disabled', true);
+            $('#addChoice').prop('disabled', true);
+            $('#removeChoice').prop('disabled', true);
+            $('#answer').prop('disabled', true);
+            $('#level').prop('disabled', true);
+            $('#datetimepicker_result').prop('disabled', true);
+            $('#submit').prop('disabled', true);
+
+            // handling edit button click
+             $("#edit").click(function(){
+                $('#question').prop('disabled', false);
+                $('#courseTopic').prop('disabled', false);
+                $('#choice1').prop('disabled', false);
+	            $('#choice2').prop('disabled', false);
+	            $('#choice3').prop('disabled', false);
+	            $('#choice4').prop('disabled', false);
+	            $('#choice5').prop('disabled', false);
+	            $('#choice6').prop('disabled', false);
+	            $('#addChoice').prop('disabled', false);
+            	$('#removeChoice').prop('disabled', false);
+                $('#answer').prop('disabled', false);
+                $('#level').prop('disabled', false);
+                $('#datetimepicker_result').prop('disabled', false);
+                $('#submit').prop('disabled', false);
+                $('#edit').prop('disabled', true);
+            });
+
+
+	        $(document).on('submit','#questionform',function(event){
+
+					console.log("Submitting");
+
+					// create a json object for the POST request
+		        	var postData = {
+		        		id : {{ question.id }},
+						question : $('#question').val(),
+		        		answer : $('#answer').val(),
+		        		numChoices : counter,
+		                level : $('#level').val(),
+		                datetime : $('#datetimepicker_result').val(),
+		                csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),  
+			    	};
+
+			    	// add six choices to the data being sent thru the POST request
+			    	for(var x = 1; x<=6; x++){
+						if(x<=counter){
+							postData["choice"+x] = $('#choice'+x).val();
+						}
+						else{
+							postData["choice"+x] = '';
+						}
+					}
+					event.preventDefault();
+
+					 // 0 = error, 1= dropdown, 2=textbox
+	            	if(courseTopicFlag>0){
+			            if(courseTopicFlag == 1){
+		            		postData["courseTopic"] = $('#courseTopic').val();
+		            		postData["newTopicFlag"] = 0;
+		            	}
+		            	else{ 
+		            		postData["courseTopic"] = $('#newCourseTopic').val();
+		            		postData["newTopicFlag"] = 1;
+		            	}
+
+			            $.ajax({
+			                type : "POST",
+			                //url : '/quizit/questionprocessing/',
+			                url : "{% url 'instructor:questionUpdate' %}",
+			                data : postData,
+			                success : function(){
+			                $("#questionform").trigger('reset');
+		                    $('#questionform_success').attr("class","alert alert-success");
+		                    $('#questionform_success').html("<strong>Success!</strong> The question has been updated");
+			                }
+			            }); // ajax call
+	            	} // if
+	        	}); // submit
+        }); 
+    </script>
+
+{% endblock %}

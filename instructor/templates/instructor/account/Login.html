@@ -1,0 +1,44 @@
+{% extends 'instructor/account/Base.html' %}
+
+{% block content %}
+
+	<!-- login pane-->
+	<div class="modal show" tabindex="-1" role="dialog" aria-hidden="true" style="width:500px">
+		  <div class="modal-dialog">
+		  <div class="modal-content">
+		      <div class="modal-header">
+		          <h1 class="text-center">Instructor : Sign In</h1>
+		      </div>
+
+		      <div class="modal-body" align="left" style="margin-left: 50px;">
+		          <form method="POST" role="form" class="form col-md-8 center-block" id="loginform" action="{% url 'instructor:authenticate_view' %}"> {% csrf_token %}
+		          	{%if IncorrectUsernamePassword == True %}
+		          		<span style="color:red">Incorrect Username/Password. Please retry.</span>
+		          	{% endif %}
+		          	<br>
+		            <div class="form-group">
+		              <input type="text" class="form-control input-lg" style="width:350px" placeholder="Email" id="email" name = "email" required>		              
+		            </div>
+		            <div class="form-group">
+		              <input type="password" class="form-control input-lg" style="width:350px" placeholder="Password" id="password" name="password" required>
+		            </div>
+		            <!--<div class="form-group">
+		              <label><input type="checkbox" value="">&nbsp; Remember Me</label>
+		            </div>
+		            -->
+		            <div class="form-group">
+		              <button type="submit" class="btn btn-primary btn-lg btn-block" style="width:365px; align:left;">Sign In</button>
+		            </div>
+		            <br>
+		            <a href="{% url 'instructor:forgotPassword' %}" style="text-decoration:underline;text-align:right">Forgot password? </a>
+		          </form>
+		      </div>
+
+		      <div class="modal-footer">
+		          <div style="text-align:left;">Don't have an account? <a href="{% url 'instructor:signUp' %}" style="text-decoration:underline">Sign up.</a></div>
+		      </div>
+		  </div>
+		  </div>
+	</div>
+	
+{% endblock %}

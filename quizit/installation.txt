@@ -1,0 +1,209 @@
+https://www.sitepoint.com/deploying-a-django-app-with-mod_wsgi-on-ubuntu-14-04/
+
+SSH : ssh -i "ajothomas24.pem" ubuntu@ec2-52-36-173-67.us-west-2.compute.amazonaws.com
+IP : 52.36.173.67
+
+sudo apt-get update
+sudo apt-get install python3-pip
+which pip3
+ln -s /usr/bin/pip3 /usr/bin/pip
+
+pip install django==1.9
+
+# installing pytz
+wget http://pypi.python.org/packages/source/p/pytz/pytz-2012c.tar.gz
+tar xvfz pytz-2012c.tar.gz; cd pytz-2012c/
+python setup.py install
+
+sudo pip install django-mathfilters
+
+sudo apt-get install python-pip
+sudo pip install --upgrade pip
+
+sudo pip install Django
+sudo pip install nltk
+sudo pip install django_crontab
+sudo pip install pytz
+sudo pip install django-mathfilters
+
+------------ install apache ---------------
+sudo apt-get install apache2
+sudo apt-get install python-setuptools
+sudo apt-get install libapache2-mod-wsgi
+
+------------ install apache ---------------
+vim /etc/apache2/sites-enabled/default
+
+<VirtualHost *:80>
+	ServerAdmin ajo.thomas24@gmail.com
+
+	DocumentRoot /var/www/quizit
+	WSGIScriptAlias /quizit/ /var/www/quizit/quizit/wsgi.py
+	Alias /static/ /var/www/quizit/account/static
+
+	ErrorLog /var/www/logs/error.log
+	CustomLog /var/www/logs/custom.log combined
+</VirtualHost>
+
+------------ Other settings ---------------
+
+vim /etc/apache2/apache2.conf
+WSGIPythonPath /var/www/quizit
+
+create a directory called logs in /var/www
+and give 777 permissions
+
+for filezilla transfers:
+chown -R ubuntu /var/www/
+
+# starting apache2 server
+sudo /etc/init.d/apache2 start
+sudo /etc/init.d/apache2 restart
+
+#check if apache is running
+sudo service apache2 status
+
+
+###############################################################################################################################
+
+Using 
+###############################################################################################################################
+54.69.239.219
+# Connecting to Server
+ssh -i "SO_study_key.pem" ec2-user@ec2-54-69-239-219.us-west-2.compute.amazonaws.com
+
+# Creating a virtual environment and activating it 
+virtualenv quizit-virt1
+source quizit-virt1/bin/activate
+vim /etc/httpd/conf/httpd.conf
+
+# install django and other packages
+pip install --upgrade pip
+pip install django
+pip install django-mathfilters
+pip install pysolr
+pip install nltk
+pip install django_crontab
+pip install pytz
+
+# switch to root and install apache
+sudo su
+# Install Apache
+yum install httpd
+
+sudo yum install -y httpd24
+yum search wsgi
+sudo yum install mod24_wsgi-python27.x86_64
+
+---------------- Apache restart -------------
+service httpd restart
+sudo chkconfig httpd on
+
+--------- Install mod_wsgi ------------------
+-- Check if mod_wsgi is installed or not
+httpd -M | grep wsgi
+
+-- Install mod_wsgi
+yum install mod_wsgi
+
+-- this searches amazon distro
+yum search wsgi 
+sudo yum install mod24_wsgi-python27.x86_64
+yum install python-setuptools
+
+sudo vi /etc/httpd/conf/httpd.conf
+
+# Create a virtual configuration file
+cd /etc/httpd/conf.d
+vim vhost.conf
+
+<VirtualHost *:80>
+  ServerName default:80
+
+  DocumentRoot /var/www/html
+
+  #ServerAdmin you@example.com
+
+  #ErrorLog /var/www/vhosts/logs/error_log
+
+</VirtualHost>
+
+
+<VirtualHost *:80>
+	ServerAdmin ajo.thomas24@gmail.com
+
+	DocumentRoot /var/www/ajo/quizit
+	WSGIScriptAlias / /var/www/ajo/quizit/quizit/wsgi.py
+	WSGIPythonPath /var/www/ajo/quizit/
+	Alias /static/ /var/www/ajo/quizit/account/static
+	
+	<Directory /var/www/ajo/quizit/account/static>
+		Require all granted
+	</Directory>
+
+	ErrorLog /var/www/ajo/logs/error.log
+	CustomLog /var/www/ajo/logs/custom.log combined
+	
+	<Directory /var/www/ajo/quizit/>
+		<Files wsgi.py>
+		Require all granted
+		</Files>
+	</Directory>
+
+</VirtualHost>
+
+
+<VirtualHost *:80>
+	ServerAdmin ajo.thomas24@gmail.com
+
+	DocumentRoot /var/www/ajo/quizit
+	WSGIScriptAlias / /var/www/ajo/quizit/django.wsgi
+	Alias /static/ /var/www/ajo/quizit/account/static
+
+	ErrorLog /var/www/ajo/logs/error.log
+	CustomLog /var/www/ajo/logs/custom.log combined
+	
+	<Directory />
+    AllowOverride All
+	</Directory>
+
+</VirtualHost>
+
+chown -R ec2-user /var/www/
+
+
+import os
+import sys
+
+sys.path.append('/var/www/ajo/quizit/quizit')
+
+os.environ['PYTHON_EGG_CACHE'] = '/var/www/ajo/quizit/.python-egg'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()
+
+
+
+1. Add the www group to your instance.
+sudo groupadd www
+
+2. Add your user (in this case, ec2-user) to the www group.
+sudo usermod -a -G www ec2-user
+
+3. Log out and then log back in again, and verify your membership in the www group.
+exit
+
+4. Reconnect to your instance, and then run the following command to verify your membership in the www group.
+groups
+
+Change the group ownership of /var/www and its contents to the www group.
+
+[ec2-user ~]$ sudo chown -R root:www /var/www
+Change the directory permissions of /var/www and its subdirectories to add group write permissions and to set the group ID on future subdirectories.
+
+[ec2-user ~]$ sudo chmod 2775 /var/www
+[ec2-user ~]$ find /var/www -type d -exec sudo chmod 2775 {} \;
+Recursively change the file permissions of /var/www and its subdirectories to add group write permissions.
+
+[ec2-user ~]$ find /var/www -type f -exec sudo chmod 0664 {} \;

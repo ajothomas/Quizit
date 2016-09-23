@@ -1,0 +1,283 @@
+{% extends 'student/studentBasepage.html' %}
+{% load tz %}
+{% load string_operations %}
+
+{% block breadcrumb %}
+	<a href="#">Retry Question</a>
+{% endblock %}
+
+{% block content %}
+	
+	<div class="row-fluid sortable">
+		<div class="box span8" onTablet="span6" onDesktop="span8">
+			<div class="box-header">
+				<h2>Quiz- {{ question.datetime }}</h2>
+			</div>
+			<div class="box-content">
+				<div class="page-header">
+					<h2>Q)&nbsp;&nbsp;<small>{{ question.question }}?</small></h2>
+				</div>
+				<div class="row-fluid">
+					<form class="form-horizontal" id="answerForm" role="form" method="POST">{% csrf_token %}
+						<fieldset>
+						
+						<div class="control-group">
+						
+							{% if question.choiceA != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosA" value="A" required>
+								<span id="optionASpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionAAlert"></i>
+								
+								{{ shuffledQuestion.choiceA }}
+
+								<br>
+						  	</label>
+
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+							
+						  	{% if question.choiceB != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosB" value="B">
+								<span id="optionBSpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionBAlert"></i>
+								
+								{{ shuffledQuestion.choiceB }}
+								<br>
+						  	</label>
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+
+						  	{% if question.choiceC != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosC" value="C">
+								<span id="optionCSpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionCAlert"></i>
+								
+								{{ shuffledQuestion.choiceC }}
+								<br>
+						  	</label>
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+
+						  	{% if question.choiceD != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosD" value="D">
+								<span id="optionDSpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionDAlert"></i>
+								{{ shuffledQuestion.choiceD }}
+								<br>
+						  	</label>
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+
+						  	{% if question.choiceE != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosE" value="E">
+								<span id="optionESpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionEAlert"></i>
+								
+								{{ shuffledQuestion.choiceE }}
+								<br>
+						  	</label>
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+
+						  	{% if question.choiceF != "" %}
+						 	<label class="radio">
+								<input type="radio" name="optionsRadios" id="optionsRadiosF" value="F">
+								<span id="optionFSpan">
+								&nbsp;&nbsp;&nbsp;
+								</span>
+								<i id="optionFAlert"></i>
+								
+								{{ shuffledQuestion.choiceF }}
+								<br>
+						  	</label>
+						  	<div style="clear:both"></div>
+						  	{% endif %}
+
+					  	</div>
+
+					  	<div id="quizNotification">
+					  	&nbsp;
+						</div>
+						<div class="form-actions" text-align="center">
+							  <button type="submit" style = "width:120px" class="btn btn-primary" id="submitButton">Submit</button>
+							  &nbsp;
+							   {% if backLocation == 1 %}
+								  	<button type="button" style = "width:120px" class="btn btn-danger" onclick="questionListCalender();">Go Back</button>
+							  {% else %}
+							  	<button type="button" style = "width:120px" class="btn btn-danger" onclick="questionListCalender();">Go Back</button>
+							 {% endif %}
+						</div>
+						</fieldset>
+					</form>
+				</div>
+			</div><!--/row -->
+		</div>
+
+		
+	</div>
+
+	<div class="row-fluid">
+	
+		<div class="box span6" onTablet="span6" onDesktop="span6">
+			<div class="box-header" >
+				<h2><i class="halflings-icon white edit"></i><span class="break"></span>Your Comments</h2>
+				
+			</div>
+			<div class="box-content">
+				<div style="height:250px; overflow-y:scroll;">
+				<ul class="chat" >
+					{% if studentExplanationFlag == True %}
+						{% for studentExplanation in studentExplanations %}
+							<li class="center">
+									<span class="message">
+										<span class="from"> <b> {{ first_name|title }}{{ last_name|title }} ~ </b></span>
+										<span class="time"> <b> {% timezone "America/Phoenix" %} {{ studentExplanation.postTimeStamp }} {% endtimezone %} </b> </span>
+										<span class="text">
+											{{ studentExplanation.explanationText }}
+										</span>
+								</span>	                                  
+							</li>
+						{% endfor %}
+					{% else %}
+						You have not posted any explanations for this question
+					{% endif %}
+					</div>
+					<div class="chat-form">
+						<textarea id="explanationText" name="explanationText"></textarea>
+						<button class="btn btn-info" onclick = "postExplanation();">Submit</button>
+					</div>	
+			</div>
+		</div><!--/span-->
+	
+
+		<div class="box span6" onTablet="span6" onDesktop="span6">
+			<div class="box-header" >
+				<h2><i class="halflings-icon white edit"></i><span class="break"></span>Other Comments</h2>
+				<div class="box-icon">
+					
+				</div>
+			</div>
+			<div class="box-content" style="height:405px; overflow-y:scroll;">
+				<ul class="chat">
+				{% if studentExplanationFlag == True %}
+					{% if otherStudentExplanationFlag == True %}
+						{% for otherStudentExplanation in otherStudentExplanations %}
+							<li class="center">
+									<span class="message">
+										<span class="from"> <b> {{ otherStudentExplanation.student.first_name|anonymize:"1" }} 
+										 {{ otherStudentExplanation.student.last_name|anonymize:"2" }} 
+										~</b></span>
+										<span class="time"> <b> {% timezone "America/Phoenix" %} {{ otherStudentExplanation.postTimeStamp }} {% endtimezone %} </b> </span>
+										<span class="text">
+											{{ otherStudentExplanation.explanationText }}
+										</span>
+								</span>	                                  
+							</li>
+						{% endfor %}
+					{% else %}
+						Other users have not posted any explanations for this question
+					{% endif %}	
+				{% else %}
+					You have to post at least one explanation to view this section
+				{% endif %}
+
+				</ul>
+			</div>
+		</div><!--/span-->
+
+	</div><!--/row-->
+
+{% endblock %}
+
+{% block javascript_bottom %}
+<script type="text/javascript">
+
+	// redirect to question list page on click the button
+	function questionListCalender(choice){
+		if(parseInt({{ backLocation }})==1){
+			window.location.href = "{% url 'student:studentQuestionList' %}";
+		}
+		else{
+			window.location.href = "{% url 'student:studentTodaysQuiz' %}";
+		}
+	}
+
+	function postExplanation(){
+
+		$.ajax({
+			type: "POST",
+			url: "{% url 'student:saveExplanation' %}",
+			data: {
+				"username" : "{{ username }}",
+				"questionid" : "{{ question.id }}",
+				"explanationText" : $("#explanationText").val(),
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success:function()
+			{
+				window.location.reload(true);
+			}	
+				//alert("success");
+		});
+	}
+
+	$(document).ready(function(){
+
+		// form submit
+		$("#answerForm").submit(function(event){
+			
+			var selectedOption = $('input[name=optionsRadios]:checked').val();
+			event.preventDefault();
+			
+			var choiceList = {{ choiceList|safe }};
+			console.log(choiceList);
+			var postData = {
+				"username" : "{{ username }}",
+				"questionid" : "{{ question.id }}",
+				"selectedOption" : selectedOption,
+				"choiceList" : choiceList,
+				"activityID" : "{{ activityID }}",
+				"csrfmiddlewaretoken" : $('input[name=csrfmiddlewaretoken]').val(),  
+			};
+
+			$.ajax({
+					type : "POST",
+	                url : "{% url 'student:questionRetryProcessing' %}",
+	                data : postData,
+	                success : function(data){
+	                	var returnedData = JSON.parse(data);
+	                	console.log(returnedData);
+
+	                	var correctFlag = parseInt(returnedData.correctFlag);
+                		if( correctFlag == 1 ){
+                			$('#quizNotification').attr("class","alert alert-warning");
+                			$('#quizNotification').html("CORRECT ANSWER!!");
+                		} 
+                		else {
+                			$('#quizNotification').attr("class","alert alert-warning");
+                			$('#quizNotification').html("INCORRECT ANSWER!!");
+                		}
+                		$("#submitButton").prop("disabled", true);
+	                }
+			
+			}); // end of ajax call
+		}); // end of submit button function
+	}); // end of document ready
+
+</script>
+{% endblock %}

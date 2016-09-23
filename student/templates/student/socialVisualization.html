@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+
+	<!-- start: Meta -->
+	<meta charset="utf-8">
+	<title>QUIZIT</title>
+	<meta name="description" content="Bootstrap Metro Dashboard">
+	<meta name="author" content="Dennis Ji">
+	<meta name="keyword" content="Metro, Metro UI, Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+	<!-- end: Meta -->
+
+	<!-- start: Mobile Specific -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- end: Mobile Specific -->
+
+	<!-- start: CSS -->
+	<link id="bootstrap-style" href="{% static "quizit2/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "quizit2/css/bootstrap-responsive.min.css" %}" rel="stylesheet">
+	<link id="base-style" href="{% static "quizit2/css/style.css" %}" rel="stylesheet">
+	<link id="base-style-responsive" href="{% static "quizit2/css/style-responsive.css" %}" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,cyrillic-ext,latin-ext' rel='stylesheet' type='text/css'>
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<!-- end: CSS -->
+
+	
+	<!-- start: JavaScript-->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+	
+	<script src="{% static "quizit2/js/d3.js" %}"></script>
+	<script src="{% static "quizit2/js/d3.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery-1.9.1.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery-migrate-1.0.0.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery-ui-1.10.0.custom.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.ui.touch-punch.js" %}"></script>
+	<script src="{% static "quizit2/js/modernizr.js" %}"></script>
+	<script src="{% static "quizit2/js/bootstrap.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.cookie.js" %}"></script>
+	<script src="{% static "quizit2/js/fullcalendar.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.dataTables.min.js" %}"></script>
+	<script src="{% static "quizit2/js/excanvas.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.pie.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.stack.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.resize.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.chosen.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.uniform.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.cleditor.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.noty.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.elfinder.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.raty.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.iphone.toggle.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.uploadify-3.1.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.gritter.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.imagesloaded.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.masonry.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.knob.modified.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.sparkline.min.js" %}"></script>
+	<script src="{% static "quizit2/js/counter.js" %}"></script>
+	<script src="{% static "quizit2/js/retina.js" %}"></script>
+	<script src="{% static "quizit2/js/custom.js" %}"></script>
+
+	<!-- end: JavaScript-->
+
+</head>
+
+<body>
+	<!-- start: Header -->
+	<div class="navbar">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="{% url 'studentLanding' %}"><span>QUIZIT</span></a>
+
+				<!-- start: Header Menu -->
+				<div class="nav-no-collapse header-nav">
+					<ul class="nav pull-right">
+
+						<!-- start: User Dropdown -->
+						<li class="dropdown">
+							<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+								<i class="halflings-icon white user"></i> {{ username }}
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="#"><i class="halflings-icon user"></i> Profile</a></li>
+								<li><a href="{% url 'logout_view' %}"><i class="halflings-icon off"></i> Logout</a></li>
+							</ul>
+						</li>
+						<!-- end: User Dropdown -->
+					</ul>
+				</div>
+				<!-- end: Header Menu -->
+
+			</div>
+		</div>
+	</div>
+	<!-- end: Header -->
+
+		<div class="container-fluid-full">
+		<div class="row-fluid">
+
+			<!-- start: Main Menu -->
+			<div id="sidebar-left" class="span2">
+				<div class="nav-collapse sidebar-nav">
+					<ul class="nav nav-tabs nav-stacked main-menu">
+						<li><a href="{% url 'studentLanding' %}"><i class="icon-bar-chart"></i><span class="hidden-tablet"> Dashboard</span></a></li>
+						<li><a href="{% url 'studentTodaysQuiz' %}"><i class="icon-bar-chart"></i><span class="hidden-tablet"> Today's Quiz</span></a></li>
+						<li><a href="{% url 'studentQuestionList' %}"><i class="icon-align-justify"></i><span class="hidden-tablet"> History</span></a></li>
+						<li><a href="{% url 'weakTopics' %}"><i class="icon-list-alt"></i><span class="hidden-tablet"> Weak Topics</span></a></li>
+						<li><a href="{% url 'socialVisualization' %}"><i class="icon-list-alt"></i><span class="hidden-tablet"> Visualization </span></a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- end: Main Menu -->
+
+			<!-- start: Content -->
+			<div id="content" class="span10">
+
+
+				<ul class="breadcrumb">
+					<li>
+						<i class="icon-home"></i>
+						<a href="{% url 'studentLanding' %}">Home</a>
+						<i class="icon-angle-right"></i>
+					</li>
+					<li>
+						<i class="icon-list-alt"></i>
+						<a href="#">Social Visualization</a>
+					</li>
+				</ul>
+
+				
+
+			</div>
+			
+			<br>
+		</div>
+		</div><!--/.fluid-container-->
+
+	<footer>
+		<p>
+			<span style="text-align:left;float:left">&copy; 2016 QUIZIT</span>
+		</p>
+
+	</footer>
+
+	<!-- start: JavaScript-->
+
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script>
+
+	var margin = 20,
+	    diameter = 600;
+
+	var color = d3.scale.linear()
+	    .domain([-1, 5])
+	    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+	    .interpolate(d3.interpolateHcl);
+
+	var pack = d3.layout.pack()
+	    .padding(2)
+	    .size([diameter - margin, diameter - margin])
+	    .value(function(d) { return d.size; })
+
+	var svg = d3.select("#content").append("svg")
+	    .attr("width", diameter)
+	    .attr("height", diameter)
+	  .append("g")
+	    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+			var data = "{{ data|escapejs }}";
+			var root = JSON.parse(data);
+
+	  var focus = root,
+	      nodes = pack.nodes(root),
+	      view;
+
+	  var circle = svg.selectAll("circle")
+	      .data(nodes)
+	    .enter().append("circle")
+	      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+	      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+	      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+	  var text = svg.selectAll("text")
+	      .data(nodes)
+	    .enter().append("text")
+	      .attr("class", "label")
+	      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+	      .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
+	      .text(function(d) { return d.name; });
+
+	  var node = svg.selectAll("circle,text");
+
+	  d3.select("body")
+	      .style("background", color(-1))
+	      .on("click", function() { zoom(root); });
+
+	  zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+	  function zoom(d) {
+	    var focus0 = focus; focus = d;
+
+	    var transition = d3.transition()
+	        .duration(d3.event.altKey ? 7500 : 750)
+	        .tween("zoom", function(d) {
+	          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+	          return function(t) { zoomTo(i(t)); };
+	        });
+
+	    transition.selectAll("text")
+	      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+	        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+	        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+	        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+	  }
+
+	  function zoomTo(v) {
+	    var k = diameter / v[2]; view = v;
+	    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+	    circle.attr("r", function(d) { return d.r * k; });
+	  }
+
+
+	d3.select(self.frameElement).style("height", diameter + "px");
+
+
+	</script>
+		<script src="{% static "quizit2/js/jquery-1.9.1.min.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery-migrate-1.0.0.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery-ui-1.10.0.custom.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.ui.touch-punch.js" %}"></script>
+
+		<script src="{% static "quizit2/js/modernizr.js" %}"></script>
+
+		<script src="{% static "quizit2/js/bootstrap.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.cookie.js" %}"></script>
+
+		<script src="{% static "quizit2/js/fullcalendar.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.dataTables.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/excanvas.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.pie.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.stack.js" %}"></script>
+	<script src="{% static "quizit2/js/jquery.flot.resize.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.chosen.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.uniform.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.cleditor.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.noty.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.elfinder.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.raty.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.iphone.toggle.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.uploadify-3.1.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.gritter.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.imagesloaded.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.masonry.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.knob.modified.js" %}"></script>
+
+		<script src="{% static "quizit2/js/jquery.sparkline.min.js" %}"></script>
+
+		<script src="{% static "quizit2/js/counter.js" %}"></script>
+
+		<script src="{% static "quizit2/js/retina.js" %}"></script>
+
+		<script src="{% static "quizit2/js/custom.js" %}"></script>
+	<!-- end: JavaScript-->
+<style>
+
+	.node {
+	  cursor: pointer;
+	}
+
+	.node:hover {
+	  stroke: #000;
+	  stroke-width: 1.5px;
+	}
+
+	.node--leaf {
+	  fill: white;
+	}
+
+	.label {
+	  text-anchor: middle;
+	  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+	}
+
+	.label,
+	.node--root,
+	.node--leaf {
+	  pointer-events: none;
+	}
+
+</style>
+
+</body>
+</html>

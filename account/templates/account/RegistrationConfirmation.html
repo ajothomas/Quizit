@@ -1,0 +1,33 @@
+{% extends 'account/Base.html' %}
+
+{% block content %}
+
+	<div class="container">
+	<!-- login pane-->
+	<div class="modal show" tabindex="-1" role="dialog" aria-hidden="true" style="width:500px">
+		  <div class="modal-dialog">
+		  <div class="modal-content">
+		      <div class="modal-header">
+		          <h1 class="text-center">Account Creation Confirmation</h1>
+		      </div>
+
+		      <div class="modal-body" align="center">
+		            <div class="form-group">
+		            	<br>
+		              	Your account has been created. Please <b><a href="{% url 'account:login_view' %}" style="text-decoration:underline">login</a></b> to continue.
+		            </div>
+		            
+		            <br>
+		      </div>
+		      <div class="modal-footer">
+		          &nbsp;
+		      </div>
+		  </div>
+		  </div>
+	</div>
+  
+
+		<!-- end: Content -->
+	</div><!-- Container -->
+
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends 'instructor/instructorBasepage.html' %}
+
+{% block css_top %}
+
+		<style type="text/css">
+
+		.dateGreen a {
+		    background-color: #43B5AD !important;
+		    background-image :none !important;
+		    color: #ffffff !important;
+		}
+
+		.dateRed a {
+		    background-color: #E25A59 !important;
+		    background-image :none !important;
+		    color: #ffffff !important;
+		}
+
+		.dateOrange a {
+		    background-color: #DEB948 !important;
+		    background-image :none !important;
+		    color: #ffffff !important;
+		}
+		
+		.dateGrey a {
+		    background-color: #e6e6e6 !important;
+		    background-image :none !important;
+		    color: #ffffff !important;
+		}
+
+		.size{
+			width:80px;
+		}
+
+		.btn:hover, btn:focus{
+			cursor: default;
+		}
+		
+		/* this is the big trick*/
+		#datepicker, #legends{
+			width:40%;
+			float:left;
+			height: 270px;
+		}
+
+		#blankSpace{
+			width:20%;
+			float:left;
+			height: 270px;
+		}
+
+		.btn-small{
+			width:90px;
+		}
+	</style>
+
+{% endblock %}
+
+
+{% block breadcrumb %}
+	<a href="#">Calendar View</a>
+{% endblock %}
+
+{% block content %}
+
+		<div class="row-fluid sortable">
+			<div class="box span12">
+					
+					<div class="box-header" data-original-title>
+						<h2><i class="icon-calendar"></i><span class="break"></span>Calendar</h2>
+						<div class="box-icon">
+							
+						</div>
+					</div>
+					
+					<div class="box-content">
+						
+						<br>
+						<div id="wrapper">
+							<div class='input-group date' id="datepicker"></div>
+
+							<div id="legends">
+									<p><b>Legends</b></p>
+									<button class="btn btn-small btn-success" onhover="">>90%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-warning">70%-90%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-danger">&lt;70%</button>&nbsp;&nbsp;
+									<button class="btn btn-small btn-inverse">No Attempts</button>&nbsp;&nbsp;
+							</div>
+							
+							<div id="blankSpace">&nbsp;&nbsp;&nbsp;</div>
+
+						</div>
+
+						<div id="questionDetails">
+							<div class="page-header">
+							  <h2>Question Details </h2>
+							</div>  
+							
+							<div id="questionText">Question : Test?</div>
+							<div id="attemps">Correct Attempts : X/Y</div>
+							<div id="numStudents">Number of Students : Z</div>
+							
+							<button id = "viewButton" class="btn btn-small btn-success size">View</button>
+							<button id = "editButton"  class="btn btn-small size">Edit</button>
+						</div>
+						<br>
+						<br>
+
+					</div>
+			</div>
+		</div><!-- End: row-fluid-sortable -->
+
+{% endblock %}
+
+{% block javascript_bottom %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			// Removing the question details section
+			$("#questionDetails").hide();
+
+			// Formatting the calendar
+			var eventData = {{ eventData|safe }};
+			console.log(new Date(eventData.dates[0].date).toJSON());			
+			
+			var eventDates = [];
+			for(var i = 0; i<eventData.dates.length; i++){
+				var dateObj = new Date(eventData.dates[i].date);
+				//console.log(dateObj)
+				eventDates[dateObj] = {
+									"date": dateObj, 
+									"questionText" : eventData.dates[i].questionText ,
+									"questionID" : eventData.dates[i].questionID ,
+									"editFlag" : eventData.dates[i].editFlag ,
+									"cssName" : eventData.dates[i].cssName ,
+									"numCorrectAttempts" : eventData.dates[i].numCorrectAttempts ,
+									"numAttempts" : eventData.dates[i].numAttempts ,
+									"numStudents" : eventData.dates[i].numStudents ,
+								};
+				}
+
+			$('#datepicker').datepicker({
+				inline: true,
+				disabled: false,
+				beforeShowDay: function(date) {
+					var eventDate = eventDates[date];
+					if (eventDate) {
+						if (parseInt(eventDate.answerFlag) == 1)
+							return [true, eventDate.cssName, eventDate];
+						else
+							return [true, '', ''];
+					} else {
+						return [false, '', ''];
+					}
+	     		},
+	     		onSelect: function() {
+	     			// $(this).val() returns the selected date in string. So convert it into date format
+	     			var eventDate = eventDates[new Date($(this).val())];
+	     			console.log(eventDate);
+	     			console.log(eventDate.editFlag);
+	     			$("#questionText").html("Question : "+eventDate.questionText);
+	     			$("#attemps").html("Correct Attempts : "+eventDate.numCorrectAttempts + "/"+ eventDate.numAttempts);
+	     			$("#numStudents").html("Number of students : "+eventDate.numStudents);
+
+	     			$("#viewButton").click(function(e){
+	     				var url = "{% url 'instructor:questionView' id=54321 %}";
+						url = url.replace(/54321/, parseInt(eventDate.questionID));
+						window.location.href= url;
+	     			});
+
+	     			
+	     			// if edit flag is on : change color of the button and enable it
+	     			if(parseInt(eventDate.editFlag) == 1) {
+	     				console.log("Hello");
+	     				$("#editButton").attr("class","btn btn-small btn-warning");
+	     			
+		     			$("#editButton").click(function(e){
+		     				// add action to the edit button
+		     				var url = "{% url 'instructor:questionEdit' id=54321 %}";
+							url = url.replace(/54321/, parseInt(eventDate.questionID));
+							window.location.href= url;
+
+		     			});
+	     			} 
+	     			else{
+		     			console.log("hi");
+		     			$("#editButton").attr("class","btn btn-small");
+		     			$("#editButton").unbind("click");	     			
+	     			}
+
+	     			$("#questionDetails").show();
+	     		},
+			}); // end of datetimepicker
+		});
+	</script>
+{% endblock %}

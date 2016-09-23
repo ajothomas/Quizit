@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+{% load tz %}
+<head>
+	
+	<!-- start: Meta -->
+	<meta charset="utf-8">
+	<title>QUIZIT</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, post-check=0, pre-check=0" /> 
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta charset="utf-8">
+	<title>Bootstrap Login Form</title>
+	<meta name="generator" content="Bootply" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<!-- end: Mobile Specific -->
+	
+	<!-- start: CSS -->
+	<link id="bootstrap-style" href="{% static "account/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "account/css/bootstrap-responsive.min.css" %}" rel="stylesheet">
+	<link id="base-style" href="{% static "account/css/style.css" %}" rel="stylesheet">
+	<link id="base-style-responsive" href="{% static "account/css/style-responsive.css" %}" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,cyrillic-ext,latin-ext' rel='stylesheet' type='text/css'>
+	<!-- end: CSS -->
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	
+    <style type="text/css">
+	    body, html {
+	    height: 100%;
+	 /*   background-repeat: no-repeat;
+	    background-image: linear-gradient(rgb(255, 255, 255), rgb(166, 166, 166));*/
+	}
+	</style>
+		
+</head>
+{% block css_top %}
+{% endblock %}
+
+<body>	
+
+	<!-- start: Header -->
+	<div id = "myModal4" class="navbar">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="{% url 'account:login_view' %}"><span>QUIZIT</span></a>
+				
+			</div>
+		</div>
+	</div>
+	<!-- end: Header -->
+
+	<div class="container-fluid-full">
+
+		{% block content %}
+		{% endblock %}
+	</div>
+	
+<footer>
+	<p>
+		<span style="text-align:left;float:left">
+		&copy; QuizIT <small> is one of the CS educational technologies created by <a href="https://sites.google.com/a/asu.edu/csi/">CSI Lab</a> of <a href="http://cidse.engineering.asu.edu/">School of Computing, Informatics & Decision Systems Engineering</a> at <a href="http://www.asu.edu/">Arizona State University</a>
+		</small>
+		</span>		
+	</p>
+</footer>
+
+</body>
+
+{% block end_js %}
+{% endblock %}
+</html>
+

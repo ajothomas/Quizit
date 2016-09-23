@@ -1,0 +1,17 @@
+{% block html %}
+  <p>
+  	Hi {{username}},
+  </p>
+  Your question of the day, {{ date }}.
+  <br>Please read the question and click on one of the answer choices below.
+  <h3>Q) {{ question }}</h3>
+	<div>
+  	<h3><a href='{{ choiceAURL }}'>Choice A</a>) &nbsp; {{ choiceA }} <br></h3>
+  	<h3><a href='{{ choiceBURL }}'>Choice B</a>) &nbsp; {{ choiceB }} <br></h3>
+  	<h3><a href='{{ choiceCURL }}'>Choice C</a>) &nbsp; {{ choiceC }} <br></h3>
+  	<h3><a href='{{ choiceDURL }}'>Choice D</a>) &nbsp; {{ choiceD }} <br></h3>
+  </div>
+  <br><br>
+  Thanks,<br>
+  QUIZIT Team
+{% endblock %}

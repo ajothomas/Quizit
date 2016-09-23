@@ -1,0 +1,92 @@
+{% extends 'instructor/instructorBasepage.html' %}
+
+{% block breadcrumb %}
+	<a href="#">View Questions</a>
+{% endblock %}
+
+{% block content %}
+				
+	<div class="row-fluid sortable">
+		<div class="box span12">
+			<div class="box-header" data-original-title>
+				<h2><i class="icon-align-justify"></i><span class="break"></span>Question List</h2>
+			</div>
+			<div class="box-content">
+				<table class="table table-striped bootstrap-datatable datatable">
+				  <thead>
+					  <tr>
+						  <th width="40%">Question</th>
+						  <th width="20%">Topic</th>
+						  <th>Schedule</th>
+						  <th>Status</th>
+						  <th>View - Edit - Delete</th>
+					  </tr>
+				  </thead>
+				  <tbody>
+					{% for question in questionlist %}
+                        <tr>
+
+                        	<td>{{ question.question }}</td>
+                        	<td>{{ question.courseTopic }}</td>
+                            <td>{{ question.datetime|date:"Y-m-d" }}</td>
+                            <td>
+                            	{% now "Y-m-d" as todays_date %}
+
+                            	{% if question.datetime|date:"Y-m-d" == todays_date %}
+                            		<span class="label label-success">Active</span>
+                            	{% elif question.datetime|date:"Y-m-d" < todays_date %}
+                            			<span class="label label-warning">Completed</span>
+                            	{% else %}
+                            			<span class="label">Inactive</span>
+                            	{% endif %}
+
+                            <td class="center">
+                            	{% now "Y-m-d" as todays_date %}
+								<a class="btn btn-success" href="{% url 'instructor:questionView' question.id %}">
+										<i class="halflings-icon white zoom-in"></i>
+								</a>
+
+                            	{% if question.datetime|date:"Y-m-d" > todays_date %}
+									- <a class="btn btn-info" href="{% url 'instructor:questionEdit' question.id %}">
+										<i class="halflings-icon white edit"></i>
+									</a>
+									- <a class="btn btn-danger" href="#" onclick="deleteConfirmation({{ question.id }});">
+										<i class="halflings-icon white trash"></i>
+									</a>
+                            	{% endif %}
+
+							</td>
+                        </tr>
+                   {% endfor %}
+				  </tbody>
+			  </table>
+			</div>
+		</div><!--/span-->
+	</div><!--/row-->
+
+{% endblock %}
+
+{% block javascript_bottom %}
+	<script type = "text/javascript">
+
+		function deleteConfirmation(questionID){
+			var deleteFlag = confirm("Do you want to delete the question?");
+			if(deleteFlag==true){
+				var postData = {
+					questionID : parseInt(questionID),
+					csrfmiddlewaretoken : "{{ csrf_token }}",
+				};
+				 $.ajax({
+		                type : "POST",
+		                url : "{% url 'instructor:deleteQuiz' %}",
+		                data : postData,
+		                success : function(){
+		                    alert("Question deleted !!");
+		                    window.location.href = "{% url 'instructor:questionList' %}";
+		                }
+		            }); // ajax call
+			} 
+		}
+
+	</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'student/studentBasepage.html' %}
+
+{% block breadcrumb %}
+	<a href="#">Weak Topics</a>
+{% endblock %}
+
+{% block content %}
+<div class="box-content">
+		<div class="alert alert-block">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<h4 class="alert-heading">Attention!</h4>
+			<p> We have curated some recommendations for helping you with your weak topics</p>
+		</div>
+</div>
+
+<div class="row-fluid">
+<div class="box span12">
+	<div class="box-header">
+		<h2><i class="halflings-icon white white tasks"></i><span class="break"></span> Weak Areas</h2>
+	</div>
+	<div class="box-content">
+		<ul class="skill-bar">
+        	<li>
+            	<h5> {{ weakTopic1}}( {{weakTopicPercentage1}}% )</h5>
+            	<div class="meter yellow"><span style="width: {{weakTopicPercentage1}}%"></span></div><!-- Edite width here -->
+          	</li>
+          	<li>
+            	<h5>{{ weakTopic2}}( {{weakTopicPercentage2}}% )</h5>
+            	<div class="meter blue"><span style="width: {{weakTopicPercentage2}}%"></span></div><!-- Edite width here -->
+          	</li>
+          	<li>
+            	<h5>{{ weakTopic3}}( {{weakTopicPercentage3}}% )</h5>
+            	<div class="meter pink"><span style="width: {{weakTopicPercentage3}}%"></span></div><!-- Edite width here -->
+          	</li>
+      	</ul>
+	</div>
+</div><!--/span-->
+
+</div><!--/row-->
+<div class="row-fluid">
+
+<div class="box span12">
+	<div class="box-header">
+		{% if rec1 != None %}
+		<h2><i class="halflings-icon white th"></i><span class="break"></span>Recommended Readings</h2>
+		{% else %}
+		<h2><i class="halflings-icon white th"></i><span class="break"></span>No recommended readings to show</h2>
+		{% endif %}
+	</div>
+
+	<div class="box-content">
+		<ul class="nav tab-menu nav-tabs" id="myTab">
+			{% if rec1 != None %}
+				<li class="active"><a href="#rec1">Reading 1</a></li>
+			{% endif %}
+
+			{% if rec2 != None %}
+				<li><a href="#rec2">Reading 2</a></li>
+			{% endif %}
+
+			{% if rec3 != None %}
+				<li><a href="#rec3">Reading 3</a></li>
+			{% endif %}
+
+			{% if rec4 != None %}
+				<li><a href="#rec4">Reading 4</a></li>
+			{% endif %}
+
+			{% if rec5 != None %}
+				<li><a href="#rec5">Reading 5</a></li>
+			{% endif %}
+
+		</ul>
+
+		<div id="myTabContent" class="tab-content">
+
+
+			{% if rec1 != None %}
+			<div class="tab-pane active" id="rec1">
+				<div style="height:250px; overflow-y:scroll;">
+					<p>{{ rec1.text }}
+					</p>
+				</div>
+				<div>
+					<br>
+					<span style="float:right">Votes: {{ rec1.upVotes }} <i class="icon-arrow-up green"></i> {{ rec1.downVotes }} <i class="icon-arrow-down red"></i></span>
+				</div>
+			</div>
+			{% endif %}
+
+			{% if rec2 != None %}
+			<div class="tab-pane" id="rec2">
+				<div style="height:250px; overflow-y:scroll;">
+					<p>{{ rec2.text }}
+					</p>
+				</div>
+				<div>
+					<br>
+					<span style="float:right">Votes: {{ rec2.upVotes }} <i class="icon-arrow-up green"></i> {{ rec2.downVotes }} <i class="icon-arrow-down red"></i></span>
+				</div>
+			</div>
+			{% endif %}
+
+			{% if rec3 != None %}
+			<div class="tab-pane" id="rec3">
+				<div style="height:250px; overflow-y:scroll;  ">
+					<p>{{ rec3.text }}
+					</p>
+				</div>
+				<div>
+					<br>
+					<span style="float:right">Votes: {{ rec3.upVotes }} <i class="icon-arrow-up green"></i> {{ rec3.downVotes }} <i class="icon-arrow-down red"></i></span>
+				</div>
+			</div>
+			{% endif %}
+
+
+			{% if rec4 != None %}
+			<div class="tab-pane" id="rec4">
+				<div style="height:250px; overflow-y:scroll;">
+					<p>{{ rec4.text }}
+					</p>
+				</div>
+				<div>
+					<br>
+					<span style="float:right">Votes: {{ rec4.upVotes }} <i class="icon-arrow-up green"></i> {{ rec4.downVotes }} <i class="icon-arrow-down red"></i></span>
+				</div>
+			</div>
+			{% endif %}
+
+			{% if rec5 != None %}
+			<div class="tab-pane" id="rec5">
+				<div style="height:250px; overflow-y:scroll;">
+					<p>{{ rec5.text }}
+					</p>
+				</div>
+				<div>
+					<br>
+					<span style="float:right">Votes: {{ rec5.upVotes }} <i class="icon-arrow-up green"></i> {{ rec5.downVotes }} <i class="icon-arrow-down red"></i></span>
+				</div>
+			</div>
+			{% endif %}
+
+
+		</div>
+	</div>
+</div><!--/span-->
+
+</div><!--/row--> <!--for the tabbed recommendations pane-->
+
+{% endblock %}

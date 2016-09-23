@@ -1,0 +1,527 @@
+{% extends 'instructor/instructorBasepage.html' %}
+{% block breadcrumb %}
+	<a href="#">View/Edit Question</a>
+{% endblock %}
+
+{% block content %}
+
+	<div class="row-fluid sortable">
+		<div class="box span12">
+			<div class="box-header" data-original-title>
+				<h2><i class="halflings-icon white edit"></i><span class="break"></span>Edit MCQ</h2>
+			</div>
+
+			<div class="box-content">
+				<form class="form-horizontal" id="questionform" role="form" method="POST">{% csrf_token %}
+				  <fieldset>
+					<div class="control-group">
+					  <label class="control-label" for="typeahead">Question </label>
+					  <div class="controls">
+						<textarea id="question" rows="6" class="span6"></textarea>
+					  </div>
+					</div>
+
+
+					<div class="control-group">
+						<label class="control-label" for="selectError">Course Topic</label>
+						<div class="controls">
+						  <select id="courseTopic" required>
+
+						  </select>
+						</div>
+					 </div>
+					<div id="newCourseTopicOuterDiv">					
+					</div>
+
+					<!-- Start of Choices group -->
+					<div class="control-group" id = "allChoices">
+					<!-- The choices will be added by the JS code -->
+
+					</div>
+					<!-- End of Choices group -->
+
+					<!-- Start of add/remove button section-->
+
+					<div class="control-group"> 
+					 	 <div class="controls">
+							<input type="button" id="addChoice" value="+"/>
+							&nbsp;
+					  		Add Choice
+						 </div>
+					</div>
+					<!-- End of add/remove button section-->
+					
+					<div class="control-group">
+						<label class="control-label" for="selectError">Answer Choice</label>
+						<div class="controls">
+						  <select id="answer">
+							
+						  </select>
+						</div>
+					 </div>
+
+					 <div class="control-group">
+					  <label class="control-label" for="date01">Date input</label>
+					  <div class="controls">
+						<input type="text" class="input-xlarge datepicker" id="datetimepicker_result">
+						&nbsp;&nbsp;
+						<span style="color:red;" id = "dateError">There is a quiz already scheduled for this date !!</span>
+					  </div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="selectError">Level</label>
+						<div class="controls">
+						  <select id="level">
+							<option>Easy</option>
+							<option>Moderate</option>
+							<option>Difficult</option>
+						  </select>
+						</div>
+					 </div>
+
+					<div id="questionform_success">
+					</div>
+
+					<div class="form-actions">
+					  <button type="submit" id = "submit" style = "width:120px" class="btn btn-primary" >Save changes</button>
+					  <button type="button" id = "edit" style = "width:120px" class="btn" >Edit</button>
+					</div>
+				  </fieldset>
+				</form>
+
+			</div>
+		</div><!--/span-->
+
+	</div><!--/row-->
+
+{% endblock %}
+
+{% block javascript_bottom %}
+
+
+	  <script type='text/javascript'>
+	  		{% autoescape off %}
+        		console.log("Hello");
+        		console.log("{{ question.question|escapejs }}");
+        	{% endautoescape %}
+
+        $(document).ready(function () {
+
+        	 /**************************************************************************************************/
+			/* New course topic */
+			/**************************************************************************************************/
+			// 0 = error, 1= dropdown, 2=textbox 
+			var courseTopicFlag = 1; 
+
+			$('#courseTopic').change(function(){ 
+
+				function setcourseTopicFlag(inputFlag){
+					courseTopicFlag = inputFlag;
+				}
+
+				// remove new topic textbox first. this will prevent --enter a new topic-- from adding multiple input boxes
+				$("#newCourseTopicOuterDiv").attr("class","");
+			  	$("#newCourseTopicOuterDiv").empty();
+			  	$("#courseTopic").attr("required","true");
+
+			  	// crete new topic textbo
+				if($(this).val() == "--Enter a new topic--"){
+
+					courseTopicFlag = 0;
+
+					var outerDiv = document.getElementById("newCourseTopicOuterDiv");
+					outerDiv.setAttribute("class","control-group");
+
+					var innerDiv = document.createElement("div");
+					innerDiv.setAttribute("class","controls");
+					innerDiv.setAttribute("id","newCourseTopicInnerDiv");
+
+					var inputElement = document.createElement("input");
+					inputElement.setAttribute("id","newCourseTopic");
+					inputElement.setAttribute("type","text");
+					inputElement.setAttribute("placeholder","Enter a new topic");
+					inputElement.setAttribute("required","true");
+
+					var nbspElement = document.createTextNode("\u00A0");
+
+					var spanElement = document.createElement("span");
+					spanElement.setAttribute("style","color:red");
+					spanElement.setAttribute("id","newCourseTopicError");
+
+					innerDiv.appendChild(inputElement);
+					innerDiv.appendChild(nbspElement);
+					innerDiv.appendChild(nbspElement);
+					innerDiv.appendChild(spanElement);
+					outerDiv.appendChild(innerDiv);
+
+					// removing the required attribute from the dropdown
+					$("#courseTopic").removeAttr("required");
+
+					$("#newCourseTopic").on("blur", function() {
+						if($("#newCourseTopic").val().trim()!=""){
+								var JSONData = {
+								"username" : "{{ username }}",
+								"newTopicName" : $("#newCourseTopic").val() ,
+								};
+
+								$.getJSON("{% url 'instructor:checkNewTopic' %}", JSONData, 
+							    	function(data) {
+							    		console.log(data);
+							    		 if(parseInt(data[1]) == 2){
+								         	$("#newCourseTopicError").html("");
+								         	setcourseTopicFlag(2);
+								         }
+								         else {
+								         	$("#newCourseTopicError").html("Similar topic name(s): "+data[0]);
+								         	setcourseTopicFlag(0);
+								         }
+							     } // success function
+							     ); // getJSON
+						} // if
+						else {
+							$("#newCourseTopicError").html("Please enter a new topic name");
+							setcourseTopicFlag(0);
+						} // end of else
+						
+					}); // blur event
+
+				  }
+				  else {
+				  	// reseting the class to empty to remove the space inserted after topic dropdown
+				  	$("#newCourseTopicOuterDiv").attr("class","");
+				  	$("#newCourseTopicOuterDiv").empty();
+				  	$("#courseTopic").attr("required","true");
+
+				  	courseTopicFlag = 1; 
+				  }
+				
+			}); // change of course topic dropdown
+
+
+
+        	/**************************************************************************************************/
+			/* Course topic dropdown generation*/
+			/**************************************************************************************************/
+
+			var getData = { 
+					"username" : "{{ username }}", 
+				};
+
+			$.ajax({
+				type : "GET",
+				context: document.body,
+				url : "{% url 'instructor:generateCourseTopicDropdown' %}" ,
+				data : getData ,
+				success: function(data) {
+					
+					// getting the sorted list
+					var courseTopics = JSON.parse(data);
+					$('#courseTopic').empty();
+					var selectElement = document.getElementById("courseTopic");
+					
+					for(var counter=0; counter<courseTopics.length; counter++){
+						var optionElement = document.createElement("option");
+						optionElement.setAttribute("id",courseTopics[counter][0]);
+						optionElement.setAttribute("name",courseTopics[counter][0]);
+						optionElement.setAttribute("value",courseTopics[counter][1]);
+						optionElement.innerHTML =courseTopics[counter][1];
+						selectElement.appendChild(optionElement);
+					}
+
+					var optionElement = document.createElement("option");
+					optionElement.setAttribute("id","otherTopic");
+					optionElement.setAttribute("name","otherTopic");
+					optionElement.setAttribute("value","--Enter a new topic--");
+					optionElement.innerHTML ="--Enter a new topic--";
+					selectElement.appendChild(optionElement);
+
+					// set the drop down value to the current one
+					$('#courseTopic').val('{{ question.courseTopic }}');
+				} // success function); // get
+			}); //ajax call
+			
+           
+            /**************************************************************************************************/
+			/* Add and delete course */
+			/**************************************************************************************************/
+
+            var counter = '{{ question.numChoices }}';
+
+            // function to generate dropdown
+			function generateDropDown(){
+
+				console.log("counter : "+counter);
+				var dropdownElement = document.getElementById("answer");
+				dropdownElement.innerHTML = '';
+
+				// add options based on the number of options or the value of the variable counter
+				for(var i=1;i<=counter;i++){
+					var option = document.createElement('option');
+					option.setAttribute('value','Choice'+String.fromCharCode(64 + i));
+					option.innerHTML = 'Choice '+ String.fromCharCode(64 + i);
+					dropdownElement.appendChild(option);
+				}
+			}
+
+			// call to create a dropdown when a page loads
+			generateDropDown();
+
+			// generate the original set of choices for the question
+			for(var choiceCounter = 1; choiceCounter<=	counter; choiceCounter++){
+				var outerDiv = document.createElement('div');
+				outerDiv.setAttribute('class','control-group');
+				outerDiv.setAttribute('id','choiceGroup'+choiceCounter);
+
+				// label for the option
+				var label = document.createElement('label');
+				label.setAttribute('class','control-label');
+				label.innerHTML = "Choice "+String.fromCharCode(64 + choiceCounter);
+				outerDiv.appendChild(label);
+
+				// inner div which contains the textbox along with a remove button
+				var innerDiv = document.createElement('div');
+				innerDiv.setAttribute('class','controls');
+				outerDiv.appendChild(innerDiv);
+
+				// adding textbox 
+				var textBox = document.createElement('input');
+				textBox.setAttribute('id','choice'+choiceCounter);
+				textBox.setAttribute('class','span6');
+				textBox.type = "text";
+				textBox.required = true;
+				innerDiv.appendChild(textBox);
+
+				// adding two nonblack spaces
+				innerDiv.appendChild(document.createTextNode('\u00A0\u00A0\u00A0'));
+
+				if(choiceCounter>2){
+					// adding a remove button 
+					var removeButton = document.createElement('input');
+					removeButton.type = "button";
+					removeButton.setAttribute('id',"removeChoice"+counter);
+					removeButton.value = "-";
+					innerDiv.appendChild(removeButton);
+				}
+
+				document.getElementById('allChoices').appendChild(outerDiv);
+			}
+
+
+			// add choices for the MCQ form
+			$("#addChoice").click(function(){
+				console.log("counter : "+counter);
+				if(counter==6){
+            		alert("The maximum number of choices allowed are six");
+            		return false;
+				} 
+				else {
+					counter++;	 
+
+					//outer div	
+					var outerDiv = document.createElement('div');
+					outerDiv.setAttribute('class','control-group');
+					outerDiv.setAttribute('id','choiceGroup'+counter);
+
+					//label for the option
+					var label = document.createElement('label');
+					label.setAttribute('class','control-label');
+					label.setAttribute('id','choiceLabel'+counter);
+					label.innerHTML = "Choice "+String.fromCharCode(64 + counter);
+					outerDiv.appendChild(label);
+
+					//inner div which contains the textbox
+					var innerDiv = document.createElement('div');
+					innerDiv.setAttribute('class','controls');
+					outerDiv.appendChild(innerDiv);
+					
+					//textbox 
+					var textBox = document.createElement('input');
+					textBox.setAttribute('id','choice'+counter);
+					textBox.setAttribute('class','span6');
+					textBox.type = "text";
+					textBox.required = true;
+					innerDiv.appendChild(textBox);
+					
+					innerDiv.appendChild(document.createTextNode('\u00A0\u00A0\u00A0'));
+
+					var removeButton = document.createElement('input');
+					removeButton.type = "button";
+					removeButton.setAttribute('id',"removeChoice"+counter);
+					removeButton.value = "-";
+					innerDiv.appendChild(removeButton);
+
+					document.getElementById('allChoices').appendChild(outerDiv);
+				}
+
+				// modify dropdown
+				generateDropDown();
+			}
+			);
+
+			// when remove choice button is clicked
+			$("[id^=removeChoice]").live("click", function(){
+				counter--;
+				var target_id = parseInt(event.target.id.substring(12)) ;
+				// Removing the choice group
+				$("#choiceGroup"+target_id).remove();
+				console.log("Target id : "+target_id);
+				if (target_id<counter+1){
+					
+					for(var i = target_id; i<=counter; i++){
+						// Changing the label
+						console.log("Inside loop :: i: "+i+", counter:"+counter);
+						$("#choiceLabel"+(i+1)).html("Choice "+String.fromCharCode(64 + i));
+						$("#choiceLabel"+(i+1)).attr("id","choiceLabel"+i);
+
+						// Changing the textbox
+						$("#choice"+(i+1)).attr("id","choice"+i);
+
+						// Changing the remove button
+						$("#removeChoice"+(i+1)).attr("id","removeChoice"+i);						
+
+						// Changing the remove button
+						$("#choiceGroup"+(i+1)).attr("id","choiceGroup"+i);						
+					}
+				}
+
+				// modify dropdown
+				generateDropDown();	
+			});
+
+            //setting the value of text from the database
+            {% autoescape off %}
+            $('#question').val('{{ question.question|escapejs }}');
+			{% endautoescape %}
+            $('#courseTopic').val('{{ question.courseTopic }}');
+            $('#choice1').val('{{ question.choiceA }}');
+            $('#choice2').val('{{ question.choiceB }}');
+            $('#choice3').val('{{ question.choiceC }}');
+            $('#choice4').val('{{ question.choiceD }}');
+            $('#choice5').val('{{ question.choiceE }}');
+            $('#choice6').val('{{ question.choiceF }}');
+            $('#answer').val('{{ question.answer }}');
+            $('#level').val('{{ question.level }}');
+            $('#datetimepicker_result').val('{{ question.datetime|date:"m/d/Y" }}');
+            //for reference : https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+
+            // disabling the input boxes
+            $('#question').prop('disabled', true);
+            $('#courseTopic').prop('disabled', true);
+            $('#choice1').prop('disabled', true);
+            $('#choice2').prop('disabled', true);
+            $('#choice3').prop('disabled', true);
+            $('#choice4').prop('disabled', true);
+            $('#choice5').prop('disabled', true);
+            $('#choice6').prop('disabled', true);
+            $('#addChoice').prop('disabled', true);
+            $('#removeChoice').prop('disabled', true);
+            $('#answer').prop('disabled', true);
+            $('#level').prop('disabled', true);
+            $('#datetimepicker_result').prop('disabled', true);
+            $('#submit').prop('disabled', true);
+
+            // handling edit button click
+             $("#edit").click(function(){
+                $('#question').prop('disabled', false);
+                $('#courseTopic').prop('disabled', false);
+                $('#choice1').prop('disabled', false);
+	            $('#choice2').prop('disabled', false);
+	            $('#choice3').prop('disabled', false);
+	            $('#choice4').prop('disabled', false);
+	            $('#choice5').prop('disabled', false);
+	            $('#choice6').prop('disabled', false);
+	            $('#addChoice').prop('disabled', false);
+            	$('#removeChoice').prop('disabled', false);
+                $('#answer').prop('disabled', false);
+                $('#level').prop('disabled', false);
+                $('#datetimepicker_result').prop('disabled', false);
+                $('#submit').prop('disabled', false);
+                $('#edit').prop('disabled', true);
+            });
+
+
+            /**************************************************************************************************/
+			/* Checking if duplicate date is selected */
+			/**************************************************************************************************/
+			
+			$("#dateError").hide();
+			var duplicateDate = 0;
+			$("#datetimepicker_result" ).change(function() {
+					var postData = {
+						selectedDate : $('#datetimepicker_result').val(),
+						csrfmiddlewaretoken : "{{ csrf_token }}",  
+					};
+
+					 $.ajax({
+		                type : "POST",
+		                url : "{% url 'instructor:checkDuplicateDate' %}",
+		                data : postData,
+		                success : function(data){
+		                	console.log(data);
+		                    if(parseInt(data) == 1){
+		                    	duplicateDate = 1;
+		                    	$("#dateError").show();
+		                    }
+		                    else{
+		                    	duplicateDate = 0;
+		                    	$("#dateError").hide();
+		                    }
+		                }
+		            }); // ajax call
+			});
+
+	        $(document).on('submit','#questionform',function(event){
+
+					console.log("Submitting");
+
+					// create a json object for the POST request
+		        	var postData = {
+		        		id : {{ question.id }},
+						question : $('#question').val(),
+		        		answer : $('#answer').val(),
+		        		numChoices : counter,
+		                level : $('#level').val(),
+		                datetime : $('#datetimepicker_result').val(),
+		                csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),  
+			    	};
+
+			    	// add six choices to the data being sent thru the POST request
+			    	for(var x = 1; x<=6; x++){
+						if(x<=counter){
+							postData["choice"+x] = $('#choice'+x).val();
+						}
+						else{
+							postData["choice"+x] = '';
+						}
+					}
+					event.preventDefault();
+
+					 // 0 = error, 1= dropdown, 2=textbox
+	            	if(courseTopicFlag>0 && duplicateDate == 0){
+			            if(courseTopicFlag == 1){
+		            		postData["courseTopic"] = $('#courseTopic').val();
+		            		postData["newTopicFlag"] = 0;
+		            	}
+		            	else{ 
+		            		postData["courseTopic"] = $('#newCourseTopic').val();
+		            		postData["newTopicFlag"] = 1;
+		            	}
+
+			            $.ajax({
+			                type : "POST",
+			                //url : '/quizit/questionprocessing/',
+			                url : "{% url 'instructor:questionUpdate' %}",
+			                data : postData,
+			                success : function(){
+			                $("#questionform").trigger('reset');
+		                    $('#questionform_success').attr("class","alert alert-success");
+		                    $('#questionform_success').html("<strong>Success!</strong> The question has been updated");
+			                }
+			            }); // ajax call
+	            	} // if
+	        	}); // submit
+        }); 
+    </script>
+
+{% endblock %}
