@@ -23,7 +23,7 @@ app_name = 'instructor'
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.viewCourses, name='viewCourses'),
+    url(r'^$', views.login_view, name='login_view'),
     url(r'^login/$', views.login_view, name='login_view'),
     url(r'^authenticate/$', views.authenticate_view, name='authenticate_view'),
     url(r'^forgotPassword/$', views.forgotPassword, name='forgotPassword'),

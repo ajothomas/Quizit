@@ -52,10 +52,7 @@ def authenticate_view(request):
 			if user is not None:
 				if user.is_active:
 					login(request, user)
-					if request.user.groups.filter(name='student').count() == 0 :
-						return redirect(reverse('instructor:viewCourses'))
-					else:
-						# logging user action
+					if request.user.groups.filter(name='student').count() > 0 :
 						timezone.activate(pytz.timezone("America/Phoenix"))
 						activityTimeStamp = localtime(timezone.now())
 						# request.session['last_activity'] = str(activityTimeStamp)
@@ -66,6 +63,10 @@ def authenticate_view(request):
 								startTimestamp = activityTimeStamp,
 							)
 						return redirect(reverse('student:studentTodaysQuiz'))
+					else:
+						logout(request)
+						context = { "IncorrectUsernamePassword" : True , }
+						return render(request, 'account/Login.html', context)
 				else:
 					context = {}
 					return redirect(reverse('account:login_view'))
@@ -81,11 +82,12 @@ def authenticate_view(request):
 
 def login_view(request):
 	if request.user.is_authenticated():
-		if request.user.groups.filter(name='student').count() == 0 :
-			return redirect(reverse('instructor:questionList'))
-		else:
-			# request.session['last_activity'] = datetime.now()
-			return redirect(reverse('student:studentTodaysQuiz'))
+		return redirect(reverse('student:studentTodaysQuiz'))
+		# if request.user.groups.filter(name='student').count() == 0 :
+		# 	return redirect(reverse('instructor:questionList'))
+		# else:
+		# 	# request.session['last_activity'] = datetime.now()
+		# 	return redirect(reverse('student:studentTodaysQuiz'))
 	else:
 		context = {}
 		return render(request, 'account/Login.html', context)

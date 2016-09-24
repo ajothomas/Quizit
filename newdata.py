@@ -77,5 +77,29 @@ Instructor_Course.objects.create(
 ########################################################################################################################
 
 course = Course.objects.get(courseName = 'CSE110 Principles of Programming')
-sc = Student_Course.objects.filter(course = course)
-sc.count() #337
+
+u = uuid.uuid4()
+instructor = Instructor_Info.objects.create(
+	username = 'Mohammed62085',
+	first_name = 'Mohammed',
+	last_name = 'Alzaid',
+	email = 'malzaid1@asu.edu',
+	password = 'alzaidpassword',
+	groups = 'admin',
+	uuid = str(u.hex),
+	)
+
+instructor = Instructor_Info.objects.get(email = 'malzaid1@asu.edu')
+instructor.username = 'Mohammed62085'
+instructor.save()
+student = Student_Info.objects.get(email = 'malzaid1@asu.edu')
+user = User.objects.get(email = 'malzaid1@asu.edu')
+user.set_password('alzaidpassword');
+user.groups.add(Group.objects.get(name='admin'))
+user.save()
+
+
+Instructor_Course.objects.create(
+	course = course,
+	instructor = instructor,
+	)

@@ -53,7 +53,7 @@ def authenticate_view(request):
 				print "Hi2"
 				if user.is_active:
 					login(request, user)
-					if request.user.groups.filter(name='student').count() == 0 :
+					if request.user.groups.filter(name='admin').count() != 0 :
 						return redirect(reverse('instructor:viewCourses'))
 					else:
 						context = { "IncorrectUsernamePassword" : True , }
@@ -278,7 +278,7 @@ def registrationFormProcessing(request):
 	else :
 		return redirect(reverse('account:notAllowed'))
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def createCourseProcessing(request):
 	print "Hello1"
 	if request.method == 'POST':
@@ -305,7 +305,7 @@ def createCourseProcessing(request):
 	else:
 		return redirect('account:notAllowed')
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def viewCourses(request):
 	if request.user.is_authenticated():
 		username = request.user.username
@@ -323,7 +323,7 @@ def viewCourses(request):
 	else:
 		return redirect(reverse('instructor:login_view'))
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def createCourse(request):
 	if request.user.is_authenticated():
 		username = request.user.username
@@ -337,7 +337,7 @@ def createCourse(request):
 	else:
 		return redirect(reverse('instructor:login_view'))
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def selectCourse(request):
 	if request.method == 'POST':
 		courseID = request.POST.get('courseID','')
@@ -345,7 +345,7 @@ def selectCourse(request):
 		return HttpResponse("Hello")
 
 #Instructor Dashbboard/Landing
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def instructorDashboard(request):
 	if request.user.is_authenticated():
 		if 'courseID' in request.session :
@@ -403,7 +403,7 @@ def instructorDashboard(request):
 		return redirect(reverse('account:login_view'))
 
 # Renders the list of questions
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionList(request):
 	if request.user.is_authenticated():
 		if 'courseID' in request.session :
@@ -427,7 +427,7 @@ def questionList(request):
 		return redirect(reverse('instructor:login_view'))
 
 # Renders the list of questions
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def instructorCalendar(request):
 	if request.user.is_authenticated():
 		if 'courseID' in request.session :
@@ -506,7 +506,7 @@ def instructorCalendar(request):
 		return redirect(reverse('instructor:login_view'))
 
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def generateCourseTopicDropdown(request):
 	if request.user.is_authenticated():
 		if request.GET.has_key('username'):
@@ -536,7 +536,7 @@ def generateCourseTopicDropdown(request):
 	else:
 		return redirect(reverse('account:login_view'))
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def checkNewTopic(request):
 	if request.user.is_authenticated():
 		if request.GET.has_key('username'):
@@ -620,7 +620,7 @@ def sendMail_view(request):
 		return redirect(reverse('account:login_view'))
 
 # Renders a MCQ Question Form
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionForm(request):
 	if request.user.is_authenticated():
 		username = request.user.username
@@ -637,7 +637,7 @@ def questionForm(request):
 		return redirect(reverse('account:login_view'))
 
 # Renders a prefilled MCQ form
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionEdit(request, id=None):
 	#print MCQ_Question.objects.get(id=id).datetime
 	if request.user.is_authenticated():
@@ -654,7 +654,7 @@ def questionEdit(request, id=None):
 		return redirect(reverse('account:login_view'))
 
 # Renders a prefilled MCQ form
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionView(request, id=None):
 	#print MCQ_Question.objects.get(id=id).datetime
 	if request.user.is_authenticated():
@@ -700,7 +700,7 @@ def questionView(request, id=None):
 		return redirect(reverse('account:login_view'))
 
 
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionUpdate(request):
 	if request.method == 'POST':
 
@@ -764,7 +764,7 @@ def processText(text):
 # 	return solr.search(queryString)
 
 # Processes the ajax call to store the MCQ form data in MCQ_Question models
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def questionProcessing(request):
 	if request.method == 'POST':
 		
@@ -850,7 +850,7 @@ def checkDuplicateDate(request):
 		return redirect(reverse('account:wrongpage'))			
 
 # Processes the ajax call to store the MCQ form data in MCQ_Question models
-@user_passes_test(lambda u: u.groups.filter(name='student').count() == 0, login_url='/instructor/wrongpage/')
+@user_passes_test(lambda u: u.groups.filter(name='admin').count() != 0, login_url='/instructor/wrongpage/')
 def deleteQuiz(request):
 	if request.user.is_authenticated():
 		if request.method == 'POST':
