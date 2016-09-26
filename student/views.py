@@ -60,7 +60,7 @@ def selectCourse(request):
 	if request.method == 'POST':
 		courseId = request.POST.get('courseId','')
 		request.session['courseId'] = courseId
-		return HttpResponse("Some response")
+		return HttpResponse("some response")
 
 @user_passes_test(lambda u: u.groups.filter(name='student').count()>0, login_url='/student/wrongpage/')
 def studentLanding(request):
