@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'student',
     'mathfilters',
     'django_crontab',
+    'explorer',
 ]
 
 MIDDLEWARE_CLASSES = [

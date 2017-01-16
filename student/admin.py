@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from account.models import Student_Info
 from student.models import Student_Answers_ActivityLog, Student_Explanations, Student_Answer_Log, Student_Answers
@@ -131,8 +132,7 @@ class Student_ExplanationsAdmin(admin.ModelAdmin):
 		writer.writerow(['student', 'question', 'explanationText','score','upvotes','downvotes','postTimeStamp'])
 
 		for s in queryset:
-			writer.writerow([s.student.id, s.question.id, s.explanationText,s.score,s.upvotes,s.downvotes,s.postTimeStamp])
-
+			writer.writerow([s.student.id, s.question.id, unicode(s.explanationText).encode("utf-8"),s.score,s.upvotes,s.downvotes,s.postTimeStamp])
 		f.close()
 
 		f = open(settings.BASE_DIR+"/static/"+"some.csv", 'r')

@@ -136,6 +136,7 @@
 									"numCorrectAttempts" : eventData.dates[i].numCorrectAttempts ,
 									"numAttempts" : eventData.dates[i].numAttempts ,
 									"numStudents" : eventData.dates[i].numStudents ,
+									"answerFlag" : eventData.dates[i].answerFlag,
 								};
 				}
 
@@ -156,8 +157,9 @@
 	     		onSelect: function() {
 	     			// $(this).val() returns the selected date in string. So convert it into date format
 	     			var eventDate = eventDates[new Date($(this).val())];
-	     			console.log(eventDate);
-	     			console.log(eventDate.editFlag);
+	     			console.log("Color-eventDate : "+eventDate.cssName);
+	     			console.log("answerFlag-eventDate : "+eventDate.answerFlag);
+					
 	     			$("#questionText").html("Question : "+eventDate.questionText);
 	     			$("#attemps").html("Correct Attempts : "+eventDate.numCorrectAttempts + "/"+ eventDate.numAttempts);
 	     			$("#numStudents").html("Number of students : "+eventDate.numStudents);

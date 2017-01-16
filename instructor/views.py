@@ -361,40 +361,104 @@ def instructorDashboard(request):
 			studentAnswers = Student_Answers.objects.filter(question__course = course)
 			studentNotes = Student_Explanations.objects.filter(question__course = course)
 			attemptsDict = Student_Answers.objects.filter(question__course = course).aggregate( Sum('numAttempts'), Sum('numCorrectAttempts'))
-			attemptsTopicList = Student_Answers.objects.filter(question__course = course).values('question__courseTopic').annotate( Sum('numAttempts'), Sum('numCorrectAttempts'))
+			attemptsTopicList = Student_Answers.objects.filter(question__course = course).values('question__courseTopic').annotate( Sum('numAttempts'), Sum('numCorrectAttempts') , Count('question', distinct=True))
 			
-			print attemptsTopicList
-			attemptsTopicDict = OrderedDict()
-			for item in attemptsTopicList:
-				tempDict = OrderedDict()
-				tempDict["courseTopic"] = item['question__courseTopic']
-				tempDict["numAttempts"] = item['numAttempts__sum']
-				tempDict["numCorrectAttempts"] = item['numCorrectAttempts__sum']
-				if item['numAttempts__sum'] == 0:
-					tempDict["percSuccess"] = "0%"
-				else:
-					tempDict["percSuccess"] = "%d%%"%(float(item['numCorrectAttempts__sum'])/item['numAttempts__sum']*100)
-				attemptsTopicDict[item['question__courseTopic']] = tempDict
 			
-			print attemptsTopicDict
 
-			allMetrics = {
-				"numAllStudents" : students.count(),
-				"numAllQuestions" : questions.count(),
-				"numAllTopics" : topics.count(),
-				"numAllAttempts" : attemptsDict['numAttempts__sum'],
-				"numAllCorrectAttempts" : attemptsDict['numCorrectAttempts__sum'],
-
-				#"attemptsTopicList" : attemptsTopicList,
-				"attemptsTopicDict": attemptsTopicDict,
-			}
+			showStatsFlag = 0
+			if students.count()>0 and questions.count()>0 and studentAnswers.count()>0:
+				showStatsFlag = 1
 
 			context = {
 				'username' : username,
-				'first_name' : first_name,				
+				'first_name' : first_name,
+				'showStatsFlag' : showStatsFlag,				
 			}
 
-			context.update(allMetrics)
+			if showStatsFlag == 1:
+				attemptsTopicDict = OrderedDict()
+				for item in attemptsTopicList:
+					tempDict = OrderedDict()
+					tempDict["courseTopic"] = item['question__courseTopic']
+					tempDict["numQuestions"] = item['question__count']
+					tempDict["numAttempts"] = item['numAttempts__sum']
+					tempDict["numCorrectAttempts"] = item['numCorrectAttempts__sum']
+					if item['numAttempts__sum'] == 0:
+						tempDict["percSuccess"] = "0%"
+					else:
+						tempDict["percSuccess"] = "%d%%"%(float(item['numCorrectAttempts__sum'])/item['numAttempts__sum']*100)
+					attemptsTopicDict[item['question__courseTopic']] = tempDict
+				
+				attemptsTopicDict1 = []
+				for item in attemptsTopicList:
+					tempDict = OrderedDict()
+					tempDict["courseTopic"] = item['question__courseTopic']
+					tempDict["numCorrectAttempts"] = item['numCorrectAttempts__sum']
+					tempDict["numIncorrectAttempts"] = item['numAttempts__sum']-item['numCorrectAttempts__sum']
+					attemptsTopicDict1.append(tempDict)
+
+				attemptsTopicDict2 = []
+				for item in attemptsTopicList:
+					x = []
+					tempDict = OrderedDict()
+					tempDict["itemLabel"] = "Correct Attempts"
+					tempDict["itemValue"] = item['numCorrectAttempts__sum']
+					x.append(tempDict)
+					tempDict = OrderedDict()
+					tempDict["itemLabel"] = "Incorrect Attempts"
+					tempDict["itemValue"] = item['numAttempts__sum']-item['numCorrectAttempts__sum']
+					x.append(tempDict)
+					
+					y = dict()
+					y["mapping"] = x
+					y["courseTopic"] = item['question__courseTopic']
+					attemptsTopicDict2.append(y)
+
+				allMetrics = {
+					"numAllStudents" : students.count(),
+					"numAllQuestions" : questions.count(),
+					"numAllTopics" : topics.count(),
+					"numAllAttempts" : attemptsDict['numAttempts__sum'],
+					"numAllCorrectAttempts" : attemptsDict['numCorrectAttempts__sum'],
+					"numAllIncorrectAttempts" : attemptsDict['numAttempts__sum']-attemptsDict['numCorrectAttempts__sum'],
+
+					#"attemptsTopicList" : attemptsTopicList,
+					"attemptsTopicDict": attemptsTopicDict,
+					"attemptsTopicDict1": json.dumps(attemptsTopicDict1),
+					"attemptsTopicDict2": json.dumps(attemptsTopicDict2),
+				}
+
+				context.update(allMetrics)
+
+				# ***************************************************************
+				# Data for difficulty level- attempts & success
+				# ***************************************************************
+				attemptsLevelList = Student_Answers.objects.filter(question__course = course).values('question__level').annotate( Sum('numAttempts'), Sum('numCorrectAttempts') , Count('question', distinct=True))
+			
+				attemptsDifficultyLevelDict = []
+				for item in attemptsLevelList:
+					tempDict = OrderedDict()
+					tempDict["level"] = item['question__level']
+					tempDict["numCorrectAttempts"] = item['numCorrectAttempts__sum']
+					tempDict["numIncorrectAttempts"] = item['numAttempts__sum']-item['numCorrectAttempts__sum']
+					attemptsDifficultyLevelDict.append(tempDict)
+
+				context.update({"attemptsDifficultyLevelDict" : json.dumps(attemptsDifficultyLevelDict),})			
+
+				# ***************************************************************
+				# Data for heatmap
+				# ***************************************************************
+				# topics2 = MCQ_Question.objects
+				topics = Course_Topics.objects.filter(course = course)
+				topicList = list()
+				for topic in topics:
+					topicList.append(topic.topicName)
+				print topicList
+				heatMap = {
+					"topicList" : json.dumps(topicList),
+				}
+				context.update(heatMap)
+
 			return render(request, 'instructor/instructorDashboard.html', context)
 		else :
 			return redirect(reverse('instructor:viewCourses'))
@@ -458,9 +522,10 @@ def instructorCalendar(request):
 						numStudents = numStudents + 1
 				
 				# numStudents = studentAnswers.count()
-
+				answerFlag = 1
 				if numAttempts == 0:
 					cssName = ""
+					answerFlag = 0
 				elif float(numCorrectAttempts)/float(numAttempts) >= 0.9:
 					cssName = "dateGreen"
 				elif float(numCorrectAttempts)/float(numAttempts) > 0.7:
@@ -481,9 +546,11 @@ def instructorCalendar(request):
 					"questionID" : question.id,
 					"editFlag" : editFlag,
 					"cssName" : cssName,
+					"cssName" : cssName,
 					"numCorrectAttempts" : numCorrectAttempts,
 					"numAttempts" : numAttempts,
 					"numStudents" : numStudents,
+					"answerFlag" : answerFlag,
 				}
 
 				print datesObj
