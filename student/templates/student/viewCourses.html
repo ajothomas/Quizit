@@ -65,7 +65,48 @@
 	<script src="{% static "account/js/retina.js" %}"></script>
 	<script src="{% static "account/js/custom.js" %}"></script>
 	
+	<script type="text/javascript">
+		function showForm(displayFormFlag){
+			if(displayFormFlag == 1)
+				$("#courseSelectFormId").show();
+			else
+				$("#courseSelectFormId").hide();
+		}
+
+		function enrollCourse(courseId){
+			var postData = {
+						"courseId": courseId,
+						"csrfmiddlewaretoken" : "{{ csrf_token }}",  
+					};
+			$.ajax({
+			        type : "POST",
+			        url : "{% url 'student:enrollCourse' %}",
+			        data : postData,
+			        success : function(){
+			            //alert("Hello world");
+			            window.location.href = "{% url 'student:viewCourses' %}";
+			        }
+			    }); // ajax call
+		}
+
+		function selectCourse(courseId){
+			var postData = {
+						"courseId": courseId,
+						"csrfmiddlewaretoken" : "{{ csrf_token }}",  
+					};
+			$.ajax({
+			        type : "POST",
+			        url : "{% url 'student:selectCourse' %}",
+			        data : postData,
+			        success : function(){
+			            //alert("Hello world");
+			            window.location.href = "{% url 'student:studentTodaysQuiz' %}";
+			        }
+			    }); // ajax call
+		}
+	</script>
 </head>
+
 
 <body>
 	<!-- start: Header -->
@@ -145,7 +186,7 @@
 			<div class="row-fluid sortable">
 			<div class="box span12">
 				<div class="box-header" data-original-title>
-					<h2><i class="icon-align-justify"></i><span class="break"></span>Course List</h2>
+					<h2><i class="icon-align-justify"></i><span class="break"></span>Enrolled Course List</h2>
 				</div>
 				<div class="box-content">
 					<table class="table table-striped">
@@ -174,8 +215,39 @@
 				</div>
 			</div><!--/span-->
 			</div><!--/row-->
+	
 
-		</div><!-- End: Content -->
+			<button onclick ="showForm(1);" class="btn btn-medium btn-success">Enroll </button>
+			&nbsp;Click on this button to enroll into a new course<br><br><br>
+			<div class="row-fluid sortable" id="courseSelectFormId" style="display:none">
+			<div class="box span12">
+				<div class="box-header" data-original-title>
+					<h2><i class="icon-align-justify"></i><span class="break"></span>Enroll</h2>
+				</div>
+				<div class="box-content">
+					<table class="table table-striped">
+					  <thead>
+						  <tr>
+							  <th width="40%">Course</th>
+							  <th width="30%">Actions</th>
+						  </tr>
+					  </thead>
+					  <tbody>
+						{% for unselectedCourse in unselectedCourses %}
+	                        <tr>
+								<td>{{ unselectedCourse }}</td>
+								<td>
+									<button onclick ="enrollCourse({{ unselectedCourse.id }});" class="btn btn-medium btn-success">
+								Enroll</button>
+								</td>
+	                        </tr>
+	                   {% endfor %}
+					  </tbody>
+				  </table>
+				</div>
+			</div><!--/span-->
+			</div><!--/row-->
+	</div><!-- End: Content -->
 	
 	</div>
 	</div>
@@ -192,23 +264,4 @@
 
 </body>
 
-<script type="text/javascript">
-	
-	// select course
-	function selectCourse(courseId){
-		var postData = {
-					"courseId": courseId,
-					"csrfmiddlewaretoken" : "{{ csrf_token }}",  
-				};
-		$.ajax({
-		        type : "POST",
-		        url : "{% url 'student:selectCourse' %}",
-		        data : postData,
-		        success : function(){
-		            //alert("Hello world");
-		            window.location.href = "{% url 'student:studentTodaysQuiz' %}";
-		        }
-		    }); // ajax call
-	}
-</script>
 </html>

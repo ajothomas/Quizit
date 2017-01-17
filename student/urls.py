@@ -24,6 +24,7 @@ urlpatterns = [
 	url(r'^$', views.viewCourses, name='viewCourses'),
 	url(r'^viewCourses/$', views.viewCourses, name='viewCourses'),
 	url(r'^selectCourse/$', views.selectCourse, name='selectCourse'),
+	url(r'^enrollCourse/$', views.enrollCourse, name='enrollCourse'),
 	url(r'^studentLanding/$', views.studentLanding, name='studentLanding'),
 	url(r'^studentTodaysQuiz/$', views.studentTodaysQuiz, name='studentTodaysQuiz'),
 	url(r'^help/$', views.helpPage, name='helpPage'),

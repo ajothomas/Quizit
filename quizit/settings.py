@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'django_crontab',
     'explorer',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -142,4 +143,3 @@ EMAIL_HOST_USER = 'learnjava.quiz@gmail.com'
 EMAIL_HOST_PASSWORD = 'learnjava'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-

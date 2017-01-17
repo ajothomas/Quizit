@@ -44,11 +44,23 @@ def viewCourses(request):
 		
 		student = Student_Info.objects.get(username = username)
 		studentCourses = Student_Course.objects.filter(student = student )
+		allCourses = Course.objects.all()
+		unselectedCourses = []
+		for course in allCourses:
+			flag = 0
+			for studentCourse in studentCourses:
+				if course == studentCourse.course:
+					flag = 1
+					break
+			if flag == 0:
+				unselectedCourses.insert(0,course)
+
 		# print studentCourses
 		context = {
 			"username" : username ,
 			"first_name" : first_name,
 			"studentCourses" : studentCourses,
+			"unselectedCourses" : unselectedCourses
 		}
 		return render(request, 'student/viewCourses.html', context)
 
@@ -61,6 +73,24 @@ def selectCourse(request):
 		courseId = request.POST.get('courseId','')
 		request.session['courseId'] = courseId
 		return HttpResponse("some response")
+
+@user_passes_test(lambda u: u.groups.filter(name='student').count() > 0, login_url='/student/wrongpage/')
+def enrollCourse(request):
+	if request.user.is_authenticated():
+		username = request.user.username
+		first_name = request.user.first_name
+
+		student = Student_Info.objects.get(username = username)
+		courseId = request.POST.get('courseId','')
+		course = Course.objects.get(id = courseId)
+		Student_Course.objects.create(
+				student = student,
+				course = course,
+				enrolledDate = datetime.now().date(),
+				)
+		return HttpResponse("some response")
+	else :
+		return redirect(reverse('account:login_view'))
 
 @user_passes_test(lambda u: u .groups.filter(name='student').count()>0, login_url='/student/wrongpage/')
 def studentLanding(request):
